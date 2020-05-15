@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8491366774075607276}
   - component: {fileID: 5029563769654896621}
+  - component: {fileID: 5676455320219438037}
   m_Layer: 0
   m_Name: NodeView
   m_TagString: Untagged
@@ -46,6 +47,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tile: {fileID: 4684778807298486694}
   borderSize: 0.042
+--- !u!65 &5676455320219438037
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4030183050383243791}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.009640574, z: 1}
+  m_Center: {x: 0, y: 0.0018085837, z: 0}
 --- !u!1001 &4684778807298389766
 PrefabInstance:
   m_ObjectHideFlags: 0

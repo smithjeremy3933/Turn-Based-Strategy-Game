@@ -4,26 +4,27 @@ using UnityEngine;
 
 public class PlayerSpawner : MonoBehaviour
 {
-    public PlayerUnitView[,] playerUnitViews;
+    public Dictionary<Unit, Node> unitNodeMap;
     public Graph graph;
+    public PlayerUnitView playerUnitView;
 
-    
     public void SpawnPlayer(Graph graph, GameObject player, int xIndex, int yIndex)
     {
         Node node = graph.GetNodeAt(xIndex, yIndex);
         Unit newUnit = new Unit(xIndex, yIndex, UnitType.player);
+        newUnit.currentNode = node;
+        newUnit.position = node.position;
         GameObject instance = Instantiate(player, node.position, Quaternion.identity, this.transform);
-        PlayerUnitView playerUnitView = instance.GetComponent<PlayerUnitView>();
+        playerUnitView.Init(newUnit);
 
-        if (playerUnitViews == null)
+        if (unitNodeMap == null)
         {
-            playerUnitViews = new PlayerUnitView[graph.Width, graph.Height];
-            playerUnitViews[xIndex, yIndex] = playerUnitView;
+            unitNodeMap = new Dictionary<Unit, Node>();
+            unitNodeMap[newUnit] = node;
         }
         else
         {
-            playerUnitViews[xIndex, yIndex] = playerUnitView;
+            unitNodeMap[newUnit] = node;
         }
-
     }
 }

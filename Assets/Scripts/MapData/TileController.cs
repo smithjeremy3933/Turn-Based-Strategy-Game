@@ -26,14 +26,6 @@ public class TileController : MonoBehaviour
             {
                 graphView.Init(graph); 
             }
-
-            if (graph.IsWithinBounds(startX, startY) && graph.IsWithinBounds(goalX, goalY) && pathfinder != null)
-            {
-                Node startNode = graph.nodes[startX, startY];
-                Node goalNode = graph.nodes[goalX, goalY];
-                pathfinder.Init(graph, graphView, startNode, goalNode);
-                pathfinder.SearchRoutine();
-            }
             if (playerUnitViewPrefab != null)
             {
                 playerSpawner.SpawnPlayer(graph, playerUnitViewPrefab, startX, startY);
