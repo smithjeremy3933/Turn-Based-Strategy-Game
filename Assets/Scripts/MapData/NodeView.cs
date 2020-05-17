@@ -6,10 +6,21 @@ public class NodeView : MonoBehaviour
 {
     public GameObject tile;
     Node m_node;
+    Vector3 endPosition;
+    public Node endNode;
 
 
     [Range(0, 0.5f)]
     public float borderSize = 0.15f;
+
+    private void OnMouseOver()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            endNode = this.m_node;
+        }
+    }
+
 
     public void Init(Node node)
     {
