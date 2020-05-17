@@ -14,28 +14,6 @@ public class PlayerUnitView : MonoBehaviour
     GraphView m_graphView;
     NodeView nodeView;
 
-    private void Start()
-    {
-        m_graph = FindObjectOfType<Graph>();      
-    }
-
-    public void OnMouseOver()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            // SelectPlayerUnit();
-        }
-    }
-
-    private void SelectPlayerUnit()
-    {
-        if (isSelected == false)
-        {
-            startPosition = gameObject.transform.position;
-            m_startNode = m_graph.GetNodeAt((int)startPosition.x, (int)startPosition.y);
-        }
-    }
-
     public void Init(Unit unit)
     {
         gameObject.name = "Player Unit " + unit.position;

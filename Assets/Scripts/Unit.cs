@@ -13,7 +13,8 @@ public class Unit
     public int xIndex = -1;
     public int yIndex = -1;
     public string name = "Steve";
-    public float movementRange = 3f;
+    public float movementRange = 5f;
+    public float actionPoints = 7f;
 
     public Vector3 position;
 
@@ -24,5 +25,10 @@ public class Unit
         this.xIndex = xIndex;
         this.yIndex = yIndex;
         this.unitType = unitType;
+    }
+
+    public void ResetActionPoints()
+    {
+        actionPoints = 7f;
     }
 }

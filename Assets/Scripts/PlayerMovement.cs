@@ -49,6 +49,18 @@ public class PlayerMovement : MonoBehaviour
             else if (hasHit && isSelected == true && startNode != null && startPos != hit.transform.position && isGoalSelected == false)
             {
                 // goalnode hit
+                Node hitGoalNode = m_graph.GetNodeAt((int)hit.transform.position.x, (int)hit.transform.position.z);
+                float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitGoalNode);
+                if (distanceBetweenNodes > currentUnit.movementRange)
+                {
+                    Debug.Log("Cannot select goal node outside of the current unit movement Range " + distanceBetweenNodes);
+                    return;
+                }
+                if (currentUnit.actionPoints < distanceBetweenNodes)
+                {
+                    Debug.Log("Not enough action points!!");
+                    return;
+                }
                 isGoalSelected = true;
                 goalPos = hit.transform.position;
                 goalNode = m_graph.GetNodeAt((int)goalPos.x, (int)goalPos.z);
@@ -63,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
                 var path = m_pathfinder.PathNodes;
                 if (path != null)
                 {
-                    StartCoroutine(FollowPath(path));
+                    StartCoroutine(FollowPath(path, currentUnit));
                 }
             }
         }
@@ -77,14 +89,16 @@ public class PlayerMovement : MonoBehaviour
     private void CalculatePath(Node start, Node end)
     {
         m_pathfinder.Init(m_graph, m_graphView, startNode, goalNode);
-        m_pathfinder.SearchRoutine();
+        m_pathfinder.SearchRoutine(currentUnit);
     }
 
-    IEnumerator FollowPath(List<Node> path)
+    IEnumerator FollowPath(List<Node> path, Unit unit)
     {
         foreach (Node node in path)
         {
             yield return new WaitForSeconds(1f);
+            unit.actionPoints -= node.distanceTravled;
+            Debug.Log(unit.actionPoints);
             transform.position = node.position;
         }
         isGoalSelected = false;

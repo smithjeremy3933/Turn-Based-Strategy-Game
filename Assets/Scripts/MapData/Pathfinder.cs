@@ -17,6 +17,7 @@ public class Pathfinder : MonoBehaviour
 
     public Color startColor = Color.green;
     public Color goalColor = Color.red;
+    public Color exploredColor = Color.gray;
 
     public bool exitOnGoal = true;
     public bool isComplete = false;
@@ -67,6 +68,8 @@ public class Pathfinder : MonoBehaviour
             return;
         }
 
+
+
         NodeView startNodeView = graphView.nodeViews[start.xIndex, start.yIndex];
 
         if (startNodeView != null)
@@ -82,12 +85,17 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
-    public void SearchRoutine()
+    public void SearchRoutine(Unit unit)
     {
         while (!isComplete)
         {
             if (m_frontierNodes.Count > 0)
             {
+                if (unit.movementRange <= m_iterations)
+                {
+                    Debug.Log("You went beyond your movement range");
+                    isComplete = true;
+                }
                 Node currentNode = m_frontierNodes.Dequeue();
                 m_iterations++;
                 if (!m_exploredNodes.Contains(currentNode))
@@ -138,6 +146,7 @@ public class Pathfinder : MonoBehaviour
                     }
                 }
             }
+            
         }
     }
 
@@ -158,7 +167,6 @@ public class Pathfinder : MonoBehaviour
             path.Insert(0, currentNode);
             currentNode = currentNode.previous;
         }
-
         return path;
     }
 }
