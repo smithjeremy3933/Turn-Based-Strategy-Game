@@ -13,6 +13,7 @@ public class Unit
     public int xIndex = -1;
     public int yIndex = -1;
     public string name = "Steve";
+    public float movementRange = 3f;
 
     public Vector3 position;
 

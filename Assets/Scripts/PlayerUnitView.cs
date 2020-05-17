@@ -16,10 +16,8 @@ public class PlayerUnitView : MonoBehaviour
 
     private void Start()
     {
-        m_graph = FindObjectOfType<Graph>();
-        
+        m_graph = FindObjectOfType<Graph>();      
     }
-
 
     public void OnMouseOver()
     {
@@ -27,7 +25,6 @@ public class PlayerUnitView : MonoBehaviour
         {
             // SelectPlayerUnit();
         }
-
     }
 
     private void SelectPlayerUnit()
@@ -38,10 +35,6 @@ public class PlayerUnitView : MonoBehaviour
             m_startNode = m_graph.GetNodeAt((int)startPosition.x, (int)startPosition.y);
         }
     }
-
-
-
-
 
     public void Init(Unit unit)
     {

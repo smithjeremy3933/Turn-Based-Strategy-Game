@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerSpawner : MonoBehaviour
 {
-    public Dictionary<Unit, Node> unitNodeMap;
+    public Dictionary<Node, Unit> unitNodeMap;
     public Graph graph;
     public PlayerUnitView playerUnitView;
 
@@ -19,12 +19,12 @@ public class PlayerSpawner : MonoBehaviour
 
         if (unitNodeMap == null)
         {
-            unitNodeMap = new Dictionary<Unit, Node>();
-            unitNodeMap[newUnit] = node;
+            unitNodeMap = new Dictionary<Node, Unit>();
+            unitNodeMap[node] = newUnit;
         }
         else
         {
-            unitNodeMap[newUnit] = node;
+            unitNodeMap[node] = newUnit;
         }
     }
 }
