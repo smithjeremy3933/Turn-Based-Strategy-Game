@@ -16,8 +16,9 @@ public class PlayerUnitView : MonoBehaviour
 
     public void Init(Unit unit)
     {
-        gameObject.name = "Player Unit " + unit.position;
+        gameObject.name = "Player Unit " + unit.name;
         gameObject.transform.position = unit.position;
         m_startNode = unit.currentNode;
+        print(gameObject.transform.position);
     }
 }

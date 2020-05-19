@@ -13,7 +13,7 @@ public class Pathfinder : MonoBehaviour
     PriorityQueue<Node> m_frontierNodes;
     List<Node> m_exploredNodes;
     List<Node> m_pathNodes;
-    public List<Node> PathNodes { get { return m_pathNodes; } }
+    public List<Node> PathNodes { get { return m_pathNodes; } set { m_pathNodes = value; } }
 
     public Color startColor = Color.green;
     public Color goalColor = Color.red;
@@ -85,7 +85,7 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
-    public void SearchRoutine(Unit unit)
+    public List<Node> SearchRoutine(Unit unit)
     {
         while (!isComplete)
         {
@@ -111,14 +111,25 @@ public class Pathfinder : MonoBehaviour
                     if (exitOnGoal)
                     {
                         isComplete = true;
+                        m_exploredNodes = null;
+                        m_frontierNodes = null;
+                        m_goalNode = null;
+                        m_startNode = null;
+                        return m_pathNodes;
                     }
                 }
             }
             else
             {
                 isComplete = true;
+                m_exploredNodes = null;
+                m_frontierNodes = null;
+                m_goalNode = null;
+                m_startNode = null;
+                return m_pathNodes;
             }
         }
+        return null;
     }
 
     private void ExpandFrontierAStar(Node node)

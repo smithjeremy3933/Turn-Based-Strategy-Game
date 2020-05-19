@@ -22,6 +22,7 @@ public class Node : IComparable<Node>
     public float priority;
 
     public Node previous = null;
+    public float movementCost = 1;
 
     public Node(int xIndex, int yIndex, NodeType nodeType)
     {
@@ -51,5 +52,8 @@ public class Node : IComparable<Node>
         previous = null;
     }
 
-   
+    public void ResetNeighbors()
+    {
+        neighbors = null;
+    }
 }

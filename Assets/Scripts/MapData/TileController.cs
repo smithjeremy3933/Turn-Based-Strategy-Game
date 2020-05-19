@@ -28,7 +28,8 @@ public class TileController : MonoBehaviour
             }
             if (playerUnitViewPrefab != null)
             {
-                playerSpawner.SpawnPlayer(graph, playerUnitViewPrefab, startX, startY);
+                playerSpawner.SpawnPlayer(graph, playerUnitViewPrefab, 4, 6);
+                playerSpawner.SpawnPlayer(graph, playerUnitViewPrefab, 5, 5);
             }
 
             
