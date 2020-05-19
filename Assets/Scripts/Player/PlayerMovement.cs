@@ -8,17 +8,17 @@ public class PlayerMovement : MonoBehaviour
     public Node startNode;
     public Node goalNode;
     public Color movementRangeColor = Color.cyan;
-    Vector3 startPos;
-    Vector3 goalPos;
     public bool isSelected;
     public bool isGoalSelected;
+    Vector3 startPos;
+    Vector3 goalPos;
     Graph m_graph;
     Pathfinder m_pathfinder;
     GraphView m_graphView;
     PlayerSpawner m_playerSpawner;
+    PlayerAttack m_playerAttack;
     Ray ray;
     Unit currentUnit;
-    float movementCost = 1f;
     Vector3 mouseOverPosition;
     List<Node> currentPath;
 
@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
         m_pathfinder = FindObjectOfType<Pathfinder>();
         m_graphView = FindObjectOfType<GraphView>();
         m_playerSpawner = FindObjectOfType<PlayerSpawner>();
+        m_playerAttack = FindObjectOfType<PlayerAttack>();
     }
 
     private void Update()
@@ -38,11 +39,7 @@ public class PlayerMovement : MonoBehaviour
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             bool hasHit = Physics.Raycast(ray, out hit);
-            if (hasHit && isSelected == false && hit.rigidbody != null && mouseOverPosition == hit.transform.position)
-            {
-                ProcessUnitMoveSelection(hit);
-            }
-            else if (hasHit && isSelected == true && startNode != null && startPos != hit.transform.position && isGoalSelected == false)
+            if (hasHit && isSelected == true && hit.rigidbody == null && startNode != null && startPos != hit.transform.position && isGoalSelected == false)
             {
                 // goalnode hit
                 Node hitGoalNode = m_graph.GetNodeAt((int)hit.transform.position.x, (int)hit.transform.position.z);
@@ -50,22 +47,36 @@ public class PlayerMovement : MonoBehaviour
                 if (distanceBetweenNodes > currentUnit.movementRange)
                 {
                     Debug.Log("Cannot select goal node outside of the current unit movement Range " + distanceBetweenNodes);
+                    isSelected = false;
                     return;
                 }
                 if (m_playerSpawner.unitNodeMap.ContainsKey(hitGoalNode))
                 {
                     Debug.Log("Node already occupied");
+                    startNode = null;
+                    isSelected = false;
                     return;
                 }
                 if (currentUnit.actionPoints < distanceBetweenNodes)
                 {
                     Debug.Log("Not enough action points!!");
+                    isSelected = false;
                     return;
                 }
                 ProcessMoveToValidGoal(hit, startNode);
             }
+            else if (hasHit && isSelected == true && m_playerAttack.tag.Equals("Enemy"))
+            {        
+                m_playerAttack.MeleeAttackEnemy();
+            }
+            else if (hasHit && isSelected == false && mouseOverPosition == hit.transform.position && tag.Equals("Player"))
+            {
+                ProcessUnitMoveSelection(hit);
+            }
+           
             else
             {
+                Debug.Log("Nothing Valid Selected");
                 isSelected = false;
             }
         }
@@ -103,8 +114,15 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log("null path");
         }
+        UpdateUnitData();
+    }
+
+    private void UpdateUnitData()
+    {
         currentUnit.position = goalPos;
         currentUnit.currentNode = goalNode;
+        currentUnit.xIndex = (int)goalPos.x;
+        currentUnit.yIndex = (int)goalPos.z;
     }
 
     private void OnMouseOver()

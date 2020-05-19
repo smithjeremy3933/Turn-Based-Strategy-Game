@@ -91,11 +91,6 @@ public class Pathfinder : MonoBehaviour
         {
             if (m_frontierNodes.Count > 0)
             {
-                if (unit.movementRange <= m_iterations)
-                {
-                    Debug.Log("You went beyond your movement range");
-                    isComplete = true;
-                }
                 Node currentNode = m_frontierNodes.Dequeue();
                 m_iterations++;
                 if (!m_exploredNodes.Contains(currentNode))

@@ -152,6 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startColor: {r: 0, g: 1, b: 0, a: 1}
   goalColor: {r: 1, g: 0, b: 0, a: 1}
+  exploredColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   exitOnGoal: 1
   isComplete: 0
 --- !u!4 &37173054
@@ -292,6 +293,8 @@ MonoBehaviour:
   pathfinder: {fileID: 37173053}
   playerSpawner: {fileID: 1410394270}
   playerUnitViewPrefab: {fileID: 5101742713123201070, guid: a27a90e445144964eb7016336321e8da,
+    type: 3}
+  enemyUnitViewPrefab: {fileID: 4324039294667027134, guid: 5148c0f089b8037469af020b8d989c04,
     type: 3}
   startX: 0
   startY: 0
@@ -560,6 +563,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   graph: {fileID: 1195788894}
   playerUnitView: {fileID: 7608174489245071071, guid: a27a90e445144964eb7016336321e8da,
+    type: 3}
+  enemyUnitView: {fileID: 6107227002096538173, guid: 5148c0f089b8037469af020b8d989c04,
     type: 3}
 --- !u!4 &1410394271
 Transform:

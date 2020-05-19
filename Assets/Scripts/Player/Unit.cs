@@ -14,6 +14,8 @@ public class Unit
     public int yIndex = -1;
     public string name = "Steve";
     public float movementRange = 5f;
+    public int health = 100;
+    public int baseAttackDamage = 10;
     public float actionPoints = 7f;
 
     public Vector3 position;
