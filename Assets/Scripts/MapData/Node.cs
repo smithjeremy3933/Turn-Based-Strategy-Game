@@ -50,10 +50,6 @@ public class Node : IComparable<Node>
     public void Reset()
     {
         previous = null;
-    }
-
-    public void ResetNeighbors()
-    {
-        neighbors = null;
+        distanceTravled = Mathf.Infinity;
     }
 }

@@ -5,6 +5,4 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     Unit selectedUnit;
-
-
 }

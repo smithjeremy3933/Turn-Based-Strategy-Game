@@ -41,18 +41,18 @@ public class Pathfinder : MonoBehaviour
         m_goalNode = goal;
 
         ShowColors(graphView, start, goal);
-
+        
         m_frontierNodes = new PriorityQueue<Node>();
         m_frontierNodes.Enqueue(start);
         m_exploredNodes = new List<Node>();
         m_pathNodes = new List<Node>();
+      
 
         for (int x = 0; x < m_graph.Width; x++)
         {
             for (int y = 0; y < m_graph.Height; y++)
             {
                 m_graph.nodes[x, y].Reset();
-
             }
         }
 
@@ -179,5 +179,14 @@ public class Pathfinder : MonoBehaviour
             currentNode = currentNode.previous;
         }
         return path;
+    }
+
+    public void ClearPath()
+    {
+        m_exploredNodes = null;
+        m_frontierNodes = null;
+        m_goalNode = null;
+        m_startNode = null;
+        m_pathNodes = null;
     }
 }

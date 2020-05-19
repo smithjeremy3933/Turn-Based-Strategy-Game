@@ -21,7 +21,6 @@ public class NodeView : MonoBehaviour
         }
     }
 
-
     public void Init(Node node)
     {
         if (tile != null)

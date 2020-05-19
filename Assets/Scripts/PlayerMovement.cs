@@ -62,7 +62,7 @@ public class PlayerMovement : MonoBehaviour
                     Debug.Log("Not enough action points!!");
                     return;
                 }
-                ProcessMoveToValidGoal(hit);
+                ProcessMoveToValidGoal(hit, startNode);
             }
             else
             {
@@ -83,20 +83,19 @@ public class PlayerMovement : MonoBehaviour
         HighlightUnitMovementRange(currentUnit);
     }
 
-    private void ProcessMoveToValidGoal(RaycastHit hit)
+    private void ProcessMoveToValidGoal(RaycastHit hit, Node start)
     {
         isGoalSelected = true;
         goalPos = hit.transform.position;
         goalNode = m_graph.GetNodeAt((int)goalPos.x, (int)goalPos.z);
+        m_pathfinder.Init(m_graph, m_graphView, start, goalNode);
         if (!m_playerSpawner.unitNodeMap.ContainsKey(goalNode))
         {
             m_playerSpawner.unitNodeMap[goalNode] = currentUnit;
             m_playerSpawner.unitNodeMap.Remove(startNode);
         }
-        Debug.Log(startNode.position);
-        Debug.Log(goalNode.position);
-        CalculatePath(startNode, goalNode, currentUnit);
-        if (currentPath != null)
+        currentPath = CalculatePath(startNode, goalNode, currentUnit);
+        if (currentPath != null && startNode != null && goalNode != null)
         {
             StartCoroutine(FollowPath(currentPath, currentUnit));
         }
@@ -118,19 +117,19 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("Highlight unit's movement range");
     }
 
-    private void CalculatePath(Node start, Node goal, Unit unit)
-    {
-        m_pathfinder.Init(m_graph, m_graphView, start, goal);
-        currentPath = m_pathfinder.SearchRoutine(unit, m_graph);
-        if (currentPath.Count <= 1)
+    private List<Node> CalculatePath(Node start, Node goal, Unit unit)
+    { 
+        List<Node> calcPath = m_pathfinder.SearchRoutine(unit);
+        if (calcPath.Count <= 1)
         {
             Debug.Log("There should never be less then two node in the path");
+            return null;
         }
+        return calcPath;
     }
 
     IEnumerator FollowPath(List<Node> path, Unit unit)
     {
-        Debug.Log(path.Count);
         foreach (Node node in path)
         {
             yield return new WaitForSeconds(0.5f);
@@ -148,5 +147,6 @@ public class PlayerMovement : MonoBehaviour
         startNode = null;
         goalNode = null;
         currentPath = null;
+        m_pathfinder.ClearPath();
     }
 }

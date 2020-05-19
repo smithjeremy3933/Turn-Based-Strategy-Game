@@ -30,9 +30,7 @@ public class TileController : MonoBehaviour
             {
                 playerSpawner.SpawnPlayer(graph, playerUnitViewPrefab, 4, 6);
                 playerSpawner.SpawnPlayer(graph, playerUnitViewPrefab, 5, 5);
-            }
-
-            
+            }          
         }
     }
 }
