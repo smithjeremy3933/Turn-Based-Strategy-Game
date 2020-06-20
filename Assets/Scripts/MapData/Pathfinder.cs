@@ -68,8 +68,6 @@ public class Pathfinder : MonoBehaviour
             return;
         }
 
-
-
         NodeView startNodeView = graphView.nodeViews[start.xIndex, start.yIndex];
 
         if (startNodeView != null)

@@ -61,6 +61,7 @@ public class PlayerManager : MonoBehaviour
                             currentUnit = unit;
                             currentUnitView = unitView;
                             startNode = hitNode;
+                            HighlightUnitMovementRange(currentUnit);
                         }
                         else if (unit.isSelected == false && currentUnit != null)
                         {
@@ -69,10 +70,23 @@ public class PlayerManager : MonoBehaviour
                             currentUnitView = unitView;
                             unit.isSelected = true;
                             startNode = hitNode;
+                            HighlightUnitMovementRange(currentUnit);
                         }                     
                     }
                     else if (!m_playerSpawner.UnitNodeMap.ContainsKey(hitNode) && currentUnit.isSelected)
                     {
+                        // goalnode hit
+                        float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitNode);
+                        if (distanceBetweenNodes > currentUnit.movementRange)
+                        {
+                            Debug.Log("Cannot select goal node outside of the current unit movement Range " + distanceBetweenNodes);
+                            return;                          
+                        }
+                        if (currentUnit.actionPoints < distanceBetweenNodes)
+                        {
+                            Debug.Log("Not enough action points!!");
+                            return;
+                        }
                         isGoalSelected = true;
                         goalNode = hitNode;
                         m_pathfinder.Init(m_graph, m_graphView, currentUnit.currentNode, goalNode);
@@ -115,59 +129,10 @@ public class PlayerManager : MonoBehaviour
                 startNode = null;
             }
         }
-        //    if (hasHit && isSelected == true && hit.rigidbody == null && startNode != null && startPos != hit.transform.position && isGoalSelected == false)
-        //    {
-        //        // goalnode hit
-        //        Node hitGoalNode = m_graph.GetNodeAt((int)hit.transform.position.x, (int)hit.transform.position.z);
-        //        float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitGoalNode);
-        //        if (distanceBetweenNodes > currentUnit.movementRange)
-        //        {
-        //            Debug.Log("Cannot select goal node outside of the current unit movement Range " + distanceBetweenNodes);
-        //            isSelected = false;
-        //            return;
-        //        }
-        //        if (m_playerSpawner.unitNodeMap.ContainsKey(hitGoalNode))
-        //        {
-        //            Debug.Log("Node already occupied");
-        //            startNode = null;
-        //            isSelected = false;
-        //            return;
-        //        }
-        //        if (currentUnit.actionPoints < distanceBetweenNodes)
-        //        {
-        //            Debug.Log("Not enough action points!!");
-        //            isSelected = false;
-        //            return;
-        //        }
-        //        ProcessMoveToValidGoal(hit, startNode);
-        //    }
         //    else if (hasHit && isSelected == true && m_playerAttack.tag.Equals("Enemy"))
         //    {
         //        m_playerAttack.MeleeAttackEnemy();
         //    }
-        //    else if (hasHit && isSelected == false && mouseOverPosition == hit.transform.position && tag.Equals("Player"))
-        //    {
-        //        ProcessUnitMoveSelection(hit);
-        //    }
-
-        //    else
-        //    {
-        //        Debug.Log("Nothing Valid Selected");
-        //        isSelected = false;
-        //    }
-        //}
-    }
-
-    private void ProcessUnitMoveSelection(RaycastHit hit)
-    {
-        isSelected = true;
-        startPos = hit.transform.position;
-        startNode = m_graph.GetNodeAt((int)startPos.x, (int)startPos.z);
-        if (m_playerSpawner.UnitNodeMap.ContainsKey(startNode))
-        {
-            currentUnit = m_playerSpawner.UnitNodeMap[startNode];
-        }
-        HighlightUnitMovementRange(currentUnit);
     }
 
     private void UpdateUnitData()
@@ -207,27 +172,11 @@ public class PlayerManager : MonoBehaviour
             unit.position = node.position;
             unit.currentNode = node;
         }
+        unit.isSelected = false;
         isGoalSelected = false;
-        isSelected = false;
         startNode = null;
         goalNode = null;
         currentPath = null;
         m_pathfinder.ClearPath();
     }
-
-
-    //private void ProcessMoveToValidGoal(RaycastHit hit, Node start, Unit unit)
-    //{
-
-    //    currentPath = CalculatePath(startNode, goalNode, currentUnit);
-    //    if (currentPath != null && startNode != null && goalNode != null)
-    //    {
-    //        StartCoroutine(FollowPath(currentPath, currentUnit));
-    //    }
-    //    if (currentPath == null)
-    //    {
-    //        Debug.Log("null path");
-    //    }
-    //    UpdateUnitData();
-    //}
 }
