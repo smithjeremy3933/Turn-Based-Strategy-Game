@@ -12,4 +12,5 @@ public class PlayerUnitView : MonoBehaviour
         gameObject.transform.position = unit.position;
         m_startNode = unit.currentNode;
     }
+
 }

@@ -18,15 +18,29 @@ public class Unit
     public int baseAttackDamage = 10;
     public float actionPoints = 7f;
 
+    public bool isSelected = false;
+
+    public GameObject gameObject;
     public Vector3 position;
 
     public Node currentNode;
 
-    public Unit( int xIndex, int yIndex, UnitType unitType)
+    public Unit( int xIndex, int yIndex)
     {
         this.xIndex = xIndex;
         this.yIndex = yIndex;
+    }
+
+    public Unit(int xIndex, int yIndex, Node node, UnitType unitType)
+        : this(xIndex, yIndex)
+    {
+        this.currentNode = node;
         this.unitType = unitType;
+    }
+
+    public void Move(Node startNode, Node endNode)
+    {
+
     }
 
     public void ResetActionPoints()

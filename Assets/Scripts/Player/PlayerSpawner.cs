@@ -4,18 +4,25 @@ using UnityEngine;
 
 public class PlayerSpawner : MonoBehaviour
 {
-    public Dictionary<Node, Unit> unitNodeMap;
+    Dictionary<Node, Unit> unitNodeMap;
+    Dictionary<Node, GameObject> nodeUnitViewMap;
+
+   
     public Graph graph;
     public PlayerUnitView playerUnitView;
     public EnemyUnitView enemyUnitView;
+    public Dictionary<Node, GameObject> NodeUnitViewMap { get => nodeUnitViewMap; set => nodeUnitViewMap = value; }
+    public Dictionary<Node, Unit> UnitNodeMap { get => unitNodeMap; set => unitNodeMap = value; }
 
     public void SpawnPlayer(Graph graph, GameObject player, int xIndex, int yIndex)
     {
         Node node = graph.GetNodeAt(xIndex, yIndex);
-        Unit newUnit = new Unit(xIndex, yIndex, UnitType.player);
+        Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.player);
         newUnit.currentNode = node;
         newUnit.position = node.position;
+        
         GameObject instance = Instantiate(player, node.position, Quaternion.identity, this.transform);
+        newUnit.gameObject = instance;
         playerUnitView.Init(newUnit);
 
         if (unitNodeMap == null)
@@ -32,7 +39,7 @@ public class PlayerSpawner : MonoBehaviour
     public void SpawnEnemy(Graph graph, GameObject enemy, int xIndex, int yIndex)
     {
         Node node = graph.GetNodeAt(xIndex, yIndex);
-        Unit newUnit = new Unit(xIndex, yIndex, UnitType.enemy);
+        Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.enemy);
         newUnit.currentNode = node;
         newUnit.position = node.position;
         GameObject instance = Instantiate(enemy, node.position, Quaternion.identity, this.transform);
