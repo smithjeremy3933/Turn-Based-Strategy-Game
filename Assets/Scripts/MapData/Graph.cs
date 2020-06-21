@@ -81,7 +81,7 @@ public class Graph : MonoBehaviour
         return neighborNodes;
     }
 
-    List<Node> GetNeighbors(int x, int y)
+    public List<Node> GetNeighbors(int x, int y)
     {
         return GetNeighbors(x, y, nodes, allDirections);
     }

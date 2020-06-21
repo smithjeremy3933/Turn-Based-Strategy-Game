@@ -22,6 +22,12 @@ public class Pathfinder : MonoBehaviour
     public bool exitOnGoal = true;
     public bool isComplete = false;
     int m_iterations = 0;
+    PlayerSpawner m_playerSpawner;
+
+    private void Start()
+    {
+        m_playerSpawner = FindObjectOfType<PlayerSpawner>();
+    }
 
     public void Init(Graph graph, GraphView graphView, Node start, Node goal)
     {

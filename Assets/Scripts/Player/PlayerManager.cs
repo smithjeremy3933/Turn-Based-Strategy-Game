@@ -50,9 +50,23 @@ public class PlayerManager : MonoBehaviour
                 if (m_graph.IsWithinBounds(xIndex, yIndex))
                 {
                     Node hitNode = m_graph.GetNodeAt((int)hit.transform.position.x, (int)hit.transform.position.z);
-                    
-                    if (m_playerSpawner.UnitNodeMap.ContainsKey(hitNode))
+                    if (hitNode == null)
                     {
+                        Debug.Log("Invalid node");
+                        return;
+                    }
+                    
+                    if (m_playerSpawner.UnitNodeMap.ContainsKey(hitNode) && m_playerSpawner.UnitNodeMap[hitNode].unitType == UnitType.player && hitNode != null )
+                    {
+                        var hitNodesNieghbors = m_graph.GetNeighbors(hitNode.xIndex, hitNode.yIndex);
+                        
+                        foreach (Node node in hitNodesNieghbors)
+                        {
+                            if (m_playerSpawner.UnitNodeMap.ContainsKey(node))
+                            {
+                                Debug.Log(node.position);
+                            }
+                        }
                         Unit unit = m_playerSpawner.UnitNodeMap[hitNode];
                         GameObject unitView = unit.gameObject;
                         if (unit.isSelected == false && currentUnit == null)
@@ -73,7 +87,12 @@ public class PlayerManager : MonoBehaviour
                             HighlightUnitMovementRange(currentUnit);
                         }                     
                     }
-                    else if (!m_playerSpawner.UnitNodeMap.ContainsKey(hitNode) && currentUnit.isSelected)
+                    else if (currentUnit == null)
+                    {
+                        Debug.Log("Invalid node");
+                        return;
+                    }
+                    else if (!m_playerSpawner.UnitNodeMap.ContainsKey(hitNode) && currentUnit.isSelected && currentUnit.unitType == UnitType.player)
                     {
                         // goalnode hit
                         float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitNode);
@@ -117,13 +136,17 @@ public class PlayerManager : MonoBehaviour
                         currentUnit = null;
                         currentUnitView = null;
                         startNode = null;
+                        hitNode = null;
                     }
                 }
             }
             else
             {
                 Debug.Log("No valid node selected");
-                currentUnit.isSelected = false;
+                if (currentUnit != null)
+                {
+                    currentUnit.isSelected = false;
+                }
                 currentUnit = null;
                 currentUnitView = null;
                 startNode = null;
