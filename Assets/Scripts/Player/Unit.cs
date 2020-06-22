@@ -17,6 +17,7 @@ public class Unit
     public int health = 100;
     public int baseAttackDamage = 10;
     public float actionPoints = 7f;
+    public List<Unit> surroundingEnemies = new List<Unit>();
 
     public bool isSelected = false;
 
@@ -38,13 +39,19 @@ public class Unit
         this.unitType = unitType;
     }
 
-    public void Move(Node startNode, Node endNode)
+    public void Attack(PlayerSpawner playerSpawner, Node enemyNode)
     {
-
+        Unit enemyUnit = playerSpawner.UnitNodeMap[enemyNode];
+        enemyUnit.health -= baseAttackDamage;
     }
 
     public void ResetActionPoints()
     {
         actionPoints = 7f;
+    }
+
+    public void ResetSurroundingEnemies()
+    {
+        surroundingEnemies = null;
     }
 }
