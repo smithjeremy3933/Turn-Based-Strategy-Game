@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerSpawner : MonoBehaviour
 {
     Dictionary<Node, Unit> unitNodeMap;
-    Dictionary<Node, GameObject> nodeUnitViewMap;
+    Dictionary<Node, GameObject> nodeUnitViewMap = new Dictionary<Node, GameObject>();
     List<Unit> playerUnits = new List<Unit>();
     private List<Unit> allUnits = new List<Unit>();
 
@@ -28,6 +28,7 @@ public class PlayerSpawner : MonoBehaviour
         GameObject instance = Instantiate(player, node.position, Quaternion.identity, this.transform);
         newUnit.gameObject = instance;
         playerUnitView.Init(newUnit);
+        nodeUnitViewMap[node] = newUnit.gameObject;
 
         if (unitNodeMap == null)
         {
@@ -47,8 +48,11 @@ public class PlayerSpawner : MonoBehaviour
         newUnit.currentNode = node;
         newUnit.position = node.position;
         allUnits.Add(newUnit);
-        GameObject instance = Instantiate(enemy, node.position, Quaternion.identity, this.transform);
+
+        GameObject instance = Instantiate(enemy, node.position, Quaternion.identity, this.transform);      
         enemyUnitView.Init(newUnit);
+        newUnit.gameObject = instance;
+        nodeUnitViewMap[node] = newUnit.gameObject;
 
         if (unitNodeMap == null)
         {

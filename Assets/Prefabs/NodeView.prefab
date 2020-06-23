@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8491366774075607276}
   - component: {fileID: 5029563769654896621}
   - component: {fileID: 5676455320219438037}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: NodeView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,6 +70,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: d6d8a371a292ad64d8ac22381e894ddd, type: 3}
       propertyPath: m_Name
       value: tile
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: d6d8a371a292ad64d8ac22381e894ddd, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: d6d8a371a292ad64d8ac22381e894ddd, type: 3}
       propertyPath: m_LocalPosition.x
