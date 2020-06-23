@@ -60,7 +60,7 @@ public class PlayerManager : MonoBehaviour
                     if (m_playerSpawner.UnitNodeMap.ContainsKey(hitNode) && m_playerSpawner.UnitNodeMap[hitNode].unitType == UnitType.player && hitNode != null )
                     {
                         // A valid node with a player on it was selected
-                        SelectPlayerUnit(hitNode);
+                        SelectPlayerUnit(m_playerSpawner, hitNode);
                     }
                     else if (currentUnit == null)
                     {
@@ -81,7 +81,7 @@ public class PlayerManager : MonoBehaviour
                     }
                     else if (m_playerSpawner.UnitNodeMap.ContainsKey(hitNode) && currentUnit.isSelected && m_playerSpawner.UnitNodeMap[hitNode].unitType == UnitType.enemy)
                     {
-                        // hit node with enemy on it!
+                        // player unit is selected and player hit node with enemy on it!
                         Debug.Log("hit node with enemy on it!!!");
                         float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitNode);
                         if (currentUnit.actionPoints < distanceBetweenNodes)
@@ -90,6 +90,11 @@ public class PlayerManager : MonoBehaviour
                             return;
                         }
                         MoveToValidGoalNode(hitNode, true);                      
+                    }
+                    else if (m_playerSpawner.UnitNodeMap.ContainsKey(hitNode) && m_playerSpawner.UnitNodeMap[hitNode].unitType == UnitType.enemy && hitNode != null)
+                    {
+                        Debug.Log("enemy Selected");
+                        SelectPlayerUnit(m_playerSpawner, hitNode);
                     }
                     else
                     {
@@ -108,35 +113,32 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void SelectPlayerUnit(Node hitNode)
+    private void SelectPlayerUnit(PlayerSpawner playerSpawner, Node hitNode)
     {
-        Unit unit = m_playerSpawner.UnitNodeMap[hitNode];
+        Unit unit = playerSpawner.UnitNodeMap[hitNode];
         GameObject unitView = unit.gameObject;
-        if (unit.isSelected == false && currentUnit == null)
-        {
-            currentUnit = unit;
-            currentUnitView = unitView;
-            unit.isSelected = true;
-            startNode = hitNode;
-            HighlightUnitMovementRange(currentUnit);
-        }
-        else if (unit.isSelected == false && currentUnit != null)
-        {
-            currentUnit.isSelected = false;
-            currentUnit = unit;
-            currentUnitView = unitView;
-            unit.isSelected = true;
-            startNode = hitNode;
-            HighlightUnitMovementRange(currentUnit);
-        }
+        ResetUnitSelection(playerSpawner);
+
+        currentUnit = unit;
+        currentUnitView = unitView;
+        unit.isSelected = true;
+        startNode = hitNode;
+        HighlightUnitMovementRange(currentUnit);
+
         // Update UI
         uiController.UpdateUnitSelectText(currentUnit);
+    }
 
+    private static void ResetUnitSelection(PlayerSpawner playerSpawner)
+    {
+        foreach (Unit u in playerSpawner.AllUnits)
+        {
+            u.isSelected = false;
+        }
     }
 
     private void GetUnitNeighbors(Node hitNode, Unit unit)
     {
-
         var hitNodesNieghbors = m_graph.GetNeighbors(hitNode.xIndex, hitNode.yIndex);
 
         foreach (Node node in hitNodesNieghbors)
@@ -171,7 +173,7 @@ public class PlayerManager : MonoBehaviour
         }
         else if (!m_playerSpawner.UnitNodeMap.ContainsKey(goalNode) && isEnemyClicked)
         {
-            m_playerSpawner.UnitNodeMap[goalNode.previous] = currentUnit;
+            m_playerSpawner.UnitNodeMap[goalNode] = currentUnit;
             m_playerSpawner.UnitNodeMap.Remove(startNode);
         }
         Debug.Log("process move");
