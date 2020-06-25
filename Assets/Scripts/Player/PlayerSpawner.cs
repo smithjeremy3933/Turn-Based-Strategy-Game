@@ -64,4 +64,15 @@ public class PlayerSpawner : MonoBehaviour
             unitNodeMap[node] = newUnit;
         }
     }
+
+    public void UpdateDicts(Unit unit, Node startNode, Node goalNode)
+    {
+        if (!UnitNodeMap.ContainsKey(goalNode))
+        {
+            UnitNodeMap[goalNode] = unit;
+            NodeUnitViewMap[goalNode] = unit.gameObject;
+            UnitNodeMap.Remove(startNode);
+            NodeUnitViewMap.Remove(startNode);
+        }
+    }
 }

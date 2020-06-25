@@ -10,31 +10,27 @@ public class PlayerManager : MonoBehaviour
     public Node goalNode;
     public Color movementRangeColor = Color.cyan;
     public bool isGoalSelected;
-    Vector3 startPos;
-    Vector3 goalPos;
+
     Graph m_graph;
     Pathfinder m_pathfinder;
-    GraphView m_graphView;
     MouseController m_mouseController;
     PlayerSpawner m_playerSpawner;
-    PlayerUnitView m_playerUnitView;
     PlayerAttack m_playerAttack;
+    PlayerMovement m_playerMovement;
     Ray ray;
-    Vector3 mouseOverPosition;
     List<Node> currentPath;
     UIController uiController;
     float maxDistance = 100f;
     bool isEnemySelected = false;
 
+    public List<Node> CurrentPath { get => currentPath; set => currentPath = value; }
 
     private void Start()
     {
         m_mouseController = FindObjectOfType<MouseController>();
         m_graph = FindObjectOfType<Graph>();
         m_pathfinder = FindObjectOfType<Pathfinder>();
-        m_graphView = FindObjectOfType<GraphView>();
         m_playerSpawner = FindObjectOfType<PlayerSpawner>();
-        m_playerUnitView = FindObjectOfType<PlayerUnitView>();
         uiController = FindObjectOfType<UIController>();
     }
 
@@ -97,7 +93,8 @@ public class PlayerManager : MonoBehaviour
                     // A goal node was hit.Need to validate, move, and update data.
                     isGoalSelected = true;
                     goalNode = hitNode;
-                    Move(hitNode, currentUnit, currentUnitView, m_pathfinder, m_playerSpawner);
+                    PlayerMovement playerMovement = currentUnitView.GetComponent<PlayerMovement>();
+                    playerMovement.Move(hitNode, currentUnit, currentUnitView, m_pathfinder);
                 }
             }         
         }
@@ -106,38 +103,6 @@ public class PlayerManager : MonoBehaviour
         {
             Debug.Log("unit deselected");
             DeselectUnit(currentUnit);
-        }
-    }
-
-    private void Move(Node hitNode, Unit unit, GameObject unitView, Pathfinder pathfinder, PlayerSpawner playerSpawner)
-    {
-        GetPath(hitNode, unit, pathfinder, playerSpawner);
-        if (currentPath != null && hitNode != null)
-        {
-            StartCoroutine(FollowPath(currentPath, unit, unitView, false));
-        }
-        if (currentPath == null)
-        {
-            Debug.Log("null path");
-        }
-    }
-
-    private void GetPath(Node hitNode, Unit unit, Pathfinder pathfinder, PlayerSpawner playerSpawner)
-    {
-        pathfinder.Init(m_graph, m_graphView, unit.currentNode, hitNode);
-        UpdateDicts(unit, playerSpawner, hitNode);
-        Debug.Log("process move");
-        currentPath = CalculatePath(unit.currentNode, hitNode, unit, pathfinder);
-    }
-
-    private void UpdateDicts(Unit unit, PlayerSpawner playerSpawner, Node clickedNode)
-    {
-        if (!playerSpawner.UnitNodeMap.ContainsKey(clickedNode))
-        {
-            playerSpawner.UnitNodeMap[clickedNode] = unit;
-            playerSpawner.NodeUnitViewMap[clickedNode] = unit.gameObject;
-            playerSpawner.UnitNodeMap.Remove(startNode);
-            playerSpawner.NodeUnitViewMap.Remove(startNode);
         }
     }
 
@@ -180,46 +145,7 @@ public class PlayerManager : MonoBehaviour
         Debug.Log("Highlight unit's movement range");
     }
 
-    private List<Node> CalculatePath(Node start, Node goal, Unit unit, Pathfinder pathfinder)
-    {
-        List<Node> calcPath = pathfinder.SearchRoutine(unit);
-        if (calcPath.Count <= 1)
-        {
-            Debug.Log("There should never be less then two node in the path");
-            return null;
-        }
-        return calcPath;
-    }
-
-    IEnumerator FollowPath(List<Node> path, Unit unit, GameObject unitView, bool isEnemySelected)
-    {
-        foreach (Node node in path)
-        {
-            yield return new WaitForSeconds(0.5f);
-            if (node != startNode)
-            {
-                unit.actionPoints -= node.movementCost;
-            }
-
-            if (isEnemySelected)
-            {
-                UpdateUnitPosData(uiController, unit, unitView, node);
-            }
-
-            if (!isEnemySelected)
-            {
-                UpdateUnitPosData(uiController, unit, unitView, node);
-            }
-        }
-        //if (isEnemySelected)
-        //{
-        //    unit.Attack(m_playerSpawner, goalNode);
-        //}
-        DeselectUnit(unit);
-        
-    }
-
-    private void DeselectUnit(Unit unit)
+    public void DeselectUnit(Unit unit)
     {
         unit.isSelected = false;
         isGoalSelected = false;
@@ -230,15 +156,5 @@ public class PlayerManager : MonoBehaviour
         currentPath = null;
         isEnemySelected = false;
         m_pathfinder.ClearPath();
-    }
-
-    private static void UpdateUnitPosData(UIController uiController, Unit unit, GameObject unitView, Node node)
-    {
-        uiController.UpdateUnitSelectText(unit);
-        unitView.transform.position = node.position;
-        unit.position = node.position;
-        unit.currentNode = node;
-        unit.xIndex = node.xIndex;
-        unit.yIndex = node.yIndex;
     }
 }

@@ -149,8 +149,7 @@ public class Pathfinder : MonoBehaviour
                         m_frontierNodes.Enqueue(node.neighbors[i]);
                     }
                 }
-            }
-            
+            }           
         }
     }
 
@@ -172,6 +171,28 @@ public class Pathfinder : MonoBehaviour
             currentNode = currentNode.previous;
         }
         return path;
+    }
+
+    public List<Node> CalculatePath(Node start, Node goal, Unit unit)
+    {
+        List<Node> calcPath = SearchRoutine(unit);
+        if (calcPath.Count <= 1)
+        {
+            Debug.Log("There should never be less then two node in the path");
+            return null;
+        }
+        return calcPath;
+    }
+
+    public List<Node> GetPath(Node hitNode, Unit unit)
+    {
+        Graph graph = FindObjectOfType<Graph>();
+        GraphView graphView = FindObjectOfType<GraphView>();
+        Init(graph, graphView, unit.currentNode, hitNode);
+        Debug.Log("process move");
+        List<Node> currentPath;
+        currentPath = CalculatePath(unit.currentNode, hitNode, unit);
+        return currentPath;
     }
 
     public void ClearPath()
