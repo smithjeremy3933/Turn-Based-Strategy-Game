@@ -17,9 +17,11 @@ public class Unit
     public int health = 100;
     public int baseAttackDamage = 10;
     public float actionPoints = 7f;
-    public List<Unit> surroundingEnemies = new List<Unit>();
-
+    public List<Unit> surroundingEnemies;
+    public bool hasMoved = false;
+    public bool isWaiting = false;
     public bool isSelected = false;
+    public bool isSurrEnemies = false;
 
     public GameObject gameObject;
     public Vector3 position;
@@ -50,8 +52,29 @@ public class Unit
         actionPoints = 7f;
     }
 
-    public void ResetSurroundingEnemies()
+    public void GetUnitNeighbors(Node hitNode, Unit unit, Graph graph, PlayerSpawner playerSpawner)
+    {
+        ResetSurroundingEnemies(unit);
+        surroundingEnemies = new List<Unit>();
+        var hitNodesNieghbors = graph.GetNeighbors(hitNode.xIndex, hitNode.yIndex);
+        foreach (Node node in hitNodesNieghbors)
+        {
+            if (playerSpawner.UnitNodeMap.ContainsKey(node))
+            {
+                if (playerSpawner.UnitNodeMap[node] != null)
+                {
+                    Unit enemy = playerSpawner.UnitNodeMap[node];
+                    Debug.Log(enemy);
+                    unit.surroundingEnemies.Add(enemy);
+                    unit.isSurrEnemies = true;
+                }
+            }
+        }
+    }
+
+    public void ResetSurroundingEnemies(Unit unit)
     {
         surroundingEnemies = null;
+        unit.isSurrEnemies = false;
     }
 }

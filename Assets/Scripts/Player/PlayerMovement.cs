@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     PlayerSpawner m_playerSpawner;
     UIController uiController;
     List<Node> currentPath;
+    float moveDelay = 0.2f;
 
     private void Start()
     {
@@ -33,9 +34,10 @@ public class PlayerMovement : MonoBehaviour
 
     public IEnumerator FollowPath(List<Node> path, Unit unit, GameObject unitView, bool isEnemySelected)
     {
+        Cursor.visible = false;
         foreach (Node node in path)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(moveDelay);
             if (node != m_playerManager.startNode)
             {
                 unit.actionPoints -= node.movementCost;
@@ -56,7 +58,13 @@ public class PlayerMovement : MonoBehaviour
         //    unit.Attack(m_playerSpawner, goalNode);
         //}
         m_playerSpawner.UpdateDicts(unit, m_playerManager.startNode, unit.currentNode);
+        unit.hasMoved = true;
+        if (unit.actionPoints == 0)
+        {
+            unit.isWaiting = true;
+        }
         m_playerManager.DeselectUnit(unit);
+        Cursor.visible = true;
     }
 
     public static void UpdateUnitPosData(UIController uiController, Unit unit, GameObject unitView, Node node)
