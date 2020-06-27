@@ -4,16 +4,12 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    public void MeleeAttackEnemy()
-    {
-        Debug.Log("Die Scum");
-    }
-
-    public void Attack(PlayerSpawner playerSpawner, Node enemyNode, Unit playerUnit)
+    public void Attack(PlayerSpawner playerSpawner, Node enemyNode, Unit unit)
     {
         Unit enemyUnit = playerSpawner.UnitNodeMap[enemyNode];
         Debug.Log("(B4Hit)Enemy Health: " + enemyUnit.health);
-        enemyUnit.health -= playerUnit.baseAttackDamage;
+        enemyUnit.health -= unit.baseAttackDamage;
         Debug.Log("(After)Enemy Health: " + enemyUnit.health);
+        unit.isWaiting = true;
     }
 }

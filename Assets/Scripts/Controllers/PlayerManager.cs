@@ -19,9 +19,11 @@ public class PlayerManager : MonoBehaviour
     PlayerSpawner m_playerSpawner;
     PlayerAttack m_playerAttack;
     PlayerMovement m_playerMovement;
+    ActionList m_actionList;
     Ray ray;
     List<Node> currentPath;
     UIController uiController;
+    LineRenderer lineRenderer;
     float maxDistance = 100f;
     bool isEnemySelected = false;
 
@@ -31,7 +33,9 @@ public class PlayerManager : MonoBehaviour
         m_graph = FindObjectOfType<Graph>();
         m_pathfinder = FindObjectOfType<Pathfinder>();
         m_playerSpawner = FindObjectOfType<PlayerSpawner>();
+        m_actionList = FindObjectOfType<ActionList>();
         uiController = FindObjectOfType<UIController>();
+        lineRenderer = GetComponent<LineRenderer>();
     }
 
     private void Update()
@@ -52,6 +56,27 @@ public class PlayerManager : MonoBehaviour
                 DeselectUnit(currentUnit);
             }
 
+            if (hasHitUnit && currentUnit != null && currentUnit.isAttacking)
+            {
+                // Attacking an enemy.
+                int xIndex = (int)hit.transform.position.x;
+                int zIndex = (int)hit.transform.position.z;
+
+                Node hitNode = m_graph.GetNodeAt(xIndex, zIndex);
+                if (hitNode != null)
+                {
+                    if (currentUnit.isSurrEnemies && m_playerSpawner.UnitNodeMap.ContainsKey(hitNode))
+                    {
+                        PlayerAttack playerAttack = currentUnitView.GetComponent<PlayerAttack>();
+                        playerAttack.Attack(m_playerSpawner, hitNode, currentUnit);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
             if (hasHitUnit)
             {
                 // Selecting a unit
@@ -63,27 +88,36 @@ public class PlayerManager : MonoBehaviour
                 {
                     currentUnitView = m_mouseController.hoveredGameobject;
                     currentUnit = GetUnit(m_playerSpawner, hitNode);
-                    if (currentUnit.unitType == UnitType.enemy)
+                    if (!currentUnit.isWaiting)
                     {
-                        isEnemySelected = true;
-                    }
-                    else if (currentUnit.unitType == UnitType.player)
-                    {
-                        isEnemySelected = false;
-                    }
+                        if (currentUnit.unitType == UnitType.enemy)
+                        {
+                            isEnemySelected = true;
+                        }
+                        else if (currentUnit.unitType == UnitType.player)
+                        {
+                            isEnemySelected = false;
+                        }
 
-                    if (!currentUnit.hasMoved && !isEnemySelected)
-                    {
-                        HighlightUnitMovementRange(currentUnit);
+                        if (!currentUnit.hasMoved && !isEnemySelected)
+                        {
+                            HighlightUnitMovementRange(currentUnit);
+                            uiController.UpdateUnitSelectText(currentUnit);
+                            return;
+                        }
+
+                        if (currentUnit.hasMoved && !isEnemySelected)
+                        {
+                            PromptUnitAction(currentUnit);
+                        }
                         uiController.UpdateUnitSelectText(currentUnit);
+                    }
+                    else
+                    {
+                        Debug.Log("This unit is waiting!");
+                        DeselectUnit(currentUnit);
                         return;
                     }
-
-                    if (!isEnemySelected)
-                    {
-                        PromptUnitAction(currentUnit);
-                    }
-                    uiController.UpdateUnitSelectText(currentUnit);
                 }               
             }
 
@@ -98,12 +132,12 @@ public class PlayerManager : MonoBehaviour
                 if (hitNode != null && startNode != null && !m_playerSpawner.UnitNodeMap.ContainsKey(hitNode))
                 {
                     float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitNode);
-                    if (currentUnit.actionPoints < distanceBetweenNodes)
+                    if (currentUnit.actionPoints < distanceBetweenNodes || currentUnit.hasMoved)
                     {
-                        Debug.Log("Not enough action points!!");
+                        Debug.Log("Not enough action points or unit has already moved!");
                         return;
                     }
-                    // A goal node was hit.Need to validate, move, and update data.
+                    // A goal node was hit. Need to validate, move, and update data.
                     isGoalSelected = true;
                     goalNode = hitNode;
                     PlayerMovement playerMovement = currentUnitView.GetComponent<PlayerMovement>();
@@ -156,6 +190,29 @@ public class PlayerManager : MonoBehaviour
         return null;
     }
 
+    // Need to add a method that searches for Node under mouse 
+    // and does a pathfinding search to that node. Then I can
+    // pass that path into the DrawPath function.
+    void DrawPath(Node[] path, GameObject unitView)
+    {
+        if (path.Length == 0)
+        {
+            lineRenderer.enabled = false;
+            return;
+        }
+        lineRenderer.enabled = true;
+
+        Vector3[] ps = new Vector3[path.Length];
+
+        for (int i = 0; i < path.Length; i++)
+        {
+            ps[i] = unitView.transform.position + (Vector3.up * 0.01f);
+        }
+
+        lineRenderer.positionCount = ps.Length;
+        lineRenderer.SetPositions(ps);
+    }
+
     private static void ResetUnitSelection(PlayerSpawner playerSpawner)
     {
         foreach (Unit u in playerSpawner.AllUnits)
@@ -172,13 +229,16 @@ public class PlayerManager : MonoBehaviour
     public void DeselectUnit(Unit unit)
     {
         unit.isSelected = false;
+        unit.isAttacking = false;
         isGoalSelected = false;
+        isEnemySelected = false;
+        // lineRenderer.enabled = false;
         currentUnit = null;
         currentUnitView = null;
         startNode = null;
         goalNode = null;
         currentPath = null;
-        isEnemySelected = false;
         m_pathfinder.ClearPath();
+        m_actionList.actionList.SetActive(false);
     }
 }

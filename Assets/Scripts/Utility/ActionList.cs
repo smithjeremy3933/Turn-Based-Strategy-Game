@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class ActionList : MonoBehaviour
 {
-    [SerializeField] GameObject actionList;
+    [SerializeField] public GameObject actionList;
     [SerializeField] GameObject attackButton;
 
     private void Start()
+    {
+        actionList.SetActive(false);
+    }
+
+    public void HandleTurn()
     {
         actionList.SetActive(false);
     }

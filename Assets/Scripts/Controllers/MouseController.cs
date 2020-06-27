@@ -8,8 +8,9 @@ public class MouseController : MonoBehaviour
     Node m_hoveredNode;
     PlayerSpawner m_playerSpawner;
     Graph m_graph;
+    float maxDist = 100f;
 
-    public Node HoveredNode { get => m_hoveredNode; set => m_hoveredNode = value; }
+    public Node HoveredNode { get => m_hoveredNode; }
 
     void Start()
     {
@@ -20,9 +21,12 @@ public class MouseController : MonoBehaviour
     void Update()
     {
         LayerMask mask = LayerMask.GetMask("Unit");
+        LayerMask tileMask = LayerMask.GetMask("Tile");
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
-        bool hasHit = Physics.Raycast(ray, out hitInfo, 100f, mask);
+        RaycastHit tileHitInfo;
+        bool hasHit = Physics.Raycast(ray, out hitInfo, maxDist, mask);
+        bool hasHitTile = Physics.Raycast(ray, out tileHitInfo, maxDist, tileMask);
 
         if (hasHit)
         {
@@ -30,12 +34,13 @@ public class MouseController : MonoBehaviour
             int yIndex = (int)hitInfo.transform.position.y;
             int zIndex = (int)hitInfo.transform.position.z;
 
-            
+
             Node hitNode = m_graph.GetNodeAt(xIndex, zIndex);
             if (hitNode == null)
             {
                 return;
             }
+            m_hoveredNode = hitNode;
             if (hitNode != null && m_playerSpawner.NodeUnitViewMap[hitNode] != null)
             {
                 GameObject hitUnit = m_playerSpawner.NodeUnitViewMap[hitNode];
@@ -44,13 +49,31 @@ public class MouseController : MonoBehaviour
                     SelectObject(hitUnit);
                 }
 
-            }          
+            }
         }
         else
         {
             ClearSelection();
         }
 
+        if (hasHitTile)
+        {
+            int xIndex = (int)tileHitInfo.transform.position.x;
+            int yIndex = (int)tileHitInfo.transform.position.y;
+            int zIndex = (int)tileHitInfo.transform.position.z;
+
+            Node hitNode = m_graph.GetNodeAt(xIndex, zIndex);
+            if (hitNode == null)
+            {
+                return;
+            }
+            if (m_hoveredNode == hitNode)
+            {
+                return;
+            }
+            m_hoveredNode = hitNode;
+            return;
+        }
     }
 
     void SelectObject(GameObject obj)

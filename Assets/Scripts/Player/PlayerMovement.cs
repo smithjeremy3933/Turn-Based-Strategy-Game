@@ -59,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
         //}
         m_playerSpawner.UpdateDicts(unit, m_playerManager.startNode, unit.currentNode);
         unit.hasMoved = true;
-        if (unit.actionPoints == 0)
+        if (unit.actionPoints <= 0)
         {
             unit.isWaiting = true;
         }

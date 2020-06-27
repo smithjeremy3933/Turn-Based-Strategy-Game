@@ -22,6 +22,7 @@ public class Unit
     public bool isWaiting = false;
     public bool isSelected = false;
     public bool isSurrEnemies = false;
+    public bool isAttacking = false;
 
     public GameObject gameObject;
     public Vector3 position;
@@ -47,9 +48,12 @@ public class Unit
         enemyUnit.health -= baseAttackDamage;
     }
 
-    public void ResetActionPoints()
+    public void ProcessTurn()
     {
         actionPoints = 7f;
+        hasMoved = false;
+        isWaiting = false;
+        isAttacking = false;
     }
 
     public void GetUnitNeighbors(Node hitNode, Unit unit, Graph graph, PlayerSpawner playerSpawner)
@@ -64,9 +68,11 @@ public class Unit
                 if (playerSpawner.UnitNodeMap[node] != null)
                 {
                     Unit enemy = playerSpawner.UnitNodeMap[node];
-                    Debug.Log(enemy);
-                    unit.surroundingEnemies.Add(enemy);
-                    unit.isSurrEnemies = true;
+                    if (enemy.unitType == UnitType.enemy)
+                    {
+                        unit.surroundingEnemies.Add(enemy);
+                        unit.isSurrEnemies = true;
+                    }
                 }
             }
         }
