@@ -10,7 +10,7 @@ public class MouseController : MonoBehaviour
     public Color validLineColor = Color.cyan;
     public Color InvalidLineColor = Color.red;
     Node m_hoveredNode;
-    PlayerSpawner m_playerSpawner;
+    UnitDatabase m_unitDatabase;
     Graph m_graph;
     Pathfinder m_pathfinder;
     PlayerManager m_playerManager;
@@ -20,7 +20,7 @@ public class MouseController : MonoBehaviour
 
     void Start()
     {
-        m_playerSpawner = FindObjectOfType<PlayerSpawner>();
+        m_unitDatabase = FindObjectOfType<UnitDatabase>();
         m_graph = FindObjectOfType<Graph>();
         m_pathfinder = FindObjectOfType<Pathfinder>();
         m_playerManager = FindObjectOfType<PlayerManager>();
@@ -51,9 +51,9 @@ public class MouseController : MonoBehaviour
                 return;
             }
             m_hoveredNode = hitNode;
-            if (hitNode != null && m_playerSpawner.NodeUnitViewMap[hitNode] != null)
+            if (hitNode != null && m_unitDatabase.NodeUnitViewMap[hitNode] != null)
             {
-                GameObject hitUnit = m_playerSpawner.NodeUnitViewMap[hitNode];
+                GameObject hitUnit = m_unitDatabase.NodeUnitViewMap[hitNode];
                 if (hitUnit != null)
                 {
                     SelectObject(hitUnit);
@@ -100,12 +100,13 @@ public class MouseController : MonoBehaviour
 
     void DrawPath(Node[] path, Unit unit)
     {
-        if (path.Length == 0)
+        if (path.Length == 0 || unit.hasMoved)
         {
             lineRenderer.enabled = false;
             return;
         }
-        lineRenderer.enabled = true;        
+        lineRenderer.enabled = true;
+        
         float distanceBetweenNodes = m_graph.GetNodeDistance(path[0], path[path.Length - 1]);
         if (distanceBetweenNodes > unit.actionPoints)
         {

@@ -16,7 +16,7 @@ public class PlayerManager : MonoBehaviour
     Graph m_graph;
     Pathfinder m_pathfinder;
     MouseController m_mouseController;
-    PlayerSpawner m_playerSpawner;
+    UnitDatabase m_unitDatabase;
     PlayerAttack m_playerAttack;
     PlayerMovement m_playerMovement;
     ActionList m_actionList;
@@ -31,7 +31,7 @@ public class PlayerManager : MonoBehaviour
         m_mouseController = FindObjectOfType<MouseController>();
         m_graph = FindObjectOfType<Graph>();
         m_pathfinder = FindObjectOfType<Pathfinder>();
-        m_playerSpawner = FindObjectOfType<PlayerSpawner>();
+        m_unitDatabase = FindObjectOfType<UnitDatabase>();
         m_actionList = FindObjectOfType<ActionList>();
         uiController = FindObjectOfType<UIController>();
     }
@@ -63,10 +63,10 @@ public class PlayerManager : MonoBehaviour
                 Node hitNode = m_graph.GetNodeAt(xIndex, zIndex);
                 if (hitNode != null)
                 {
-                    if (currentUnit.isSurrEnemies && m_playerSpawner.UnitNodeMap.ContainsKey(hitNode))
+                    if (currentUnit.isSurrEnemies && m_unitDatabase.UnitNodeMap.ContainsKey(hitNode))
                     {
                         PlayerAttack playerAttack = currentUnitView.GetComponent<PlayerAttack>();
-                        playerAttack.Attack(m_playerSpawner, hitNode, currentUnit);
+                        playerAttack.Attack(m_unitDatabase, hitNode, currentUnit);
                     }
                     else
                     {
@@ -85,7 +85,7 @@ public class PlayerManager : MonoBehaviour
                 if (hitNode != null)
                 {
                     currentUnitView = m_mouseController.hoveredGameobject;
-                    currentUnit = GetUnit(m_playerSpawner, hitNode);
+                    currentUnit = GetUnit(m_unitDatabase, hitNode);
                     if (!currentUnit.isWaiting)
                     {
                         if (currentUnit.unitType == UnitType.enemy)
@@ -128,7 +128,7 @@ public class PlayerManager : MonoBehaviour
 
                 Node hitNode = m_graph.GetNodeAt(xIndex, zIndex);
 
-                if (hitNode != null && startNode != null && !m_playerSpawner.UnitNodeMap.ContainsKey(hitNode))
+                if (hitNode != null && startNode != null && !m_unitDatabase.UnitNodeMap.ContainsKey(hitNode))
                 {
                     float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitNode);
                     if (currentUnit.actionPoints < distanceBetweenNodes || currentUnit.hasMoved)
@@ -159,11 +159,11 @@ public class PlayerManager : MonoBehaviour
         actionList.HandleMovedUnit(unit);
     }
 
-    private Unit GetUnit(PlayerSpawner playerSpawner, Node node)
+    private Unit GetUnit(UnitDatabase unitDatabase, Node node)
     {
-        if (playerSpawner.NodeUnitViewMap.ContainsKey(node))
+        if (unitDatabase.NodeUnitViewMap.ContainsKey(node))
         {
-            Unit unit = playerSpawner.UnitNodeMap[node];
+            Unit unit = unitDatabase.UnitNodeMap[node];
             // Check to see if we clicked the same unit again,
             // which means we chose to stay at the current pos
             // and chose to attack or use an item;
@@ -173,11 +173,11 @@ public class PlayerManager : MonoBehaviour
                 PromptUnitAction(unit);
             }
 
-            ResetUnitSelection(playerSpawner);
+            ResetUnitSelection(unitDatabase);
             unit.isSelected = true;
             if (unit.unitType == UnitType.player && unit.hasMoved)
             {
-                unit.GetUnitNeighbors(node, unit, m_graph, playerSpawner);
+                unit.GetUnitNeighbors(node, unit, m_graph, unitDatabase);
             }
             startNode = node;
             return unit;
@@ -185,9 +185,9 @@ public class PlayerManager : MonoBehaviour
         return null;
     }
 
-    private static void ResetUnitSelection(PlayerSpawner playerSpawner)
+    private static void ResetUnitSelection(UnitDatabase unitDatabase)
     {
-        foreach (Unit u in playerSpawner.AllUnits)
+        foreach (Unit u in unitDatabase.AllUnits)
         {
             u.isSelected = false;
         }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     PlayerManager m_playerManager;
-    PlayerSpawner m_playerSpawner;
+    UnitDatabase m_unitDatabase;
     UIController uiController;
     List<Node> currentPath;
     Graph m_graph;
@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         m_playerManager = FindObjectOfType<PlayerManager>();
-        m_playerSpawner = FindObjectOfType<PlayerSpawner>();
+        m_unitDatabase = FindObjectOfType<UnitDatabase>();
         uiController = FindObjectOfType<UIController>();
     }
 
@@ -58,7 +58,7 @@ public class PlayerMovement : MonoBehaviour
                 UpdateUnitPosData(uiController, unit, unitView, node);
             }
         }
-        m_playerSpawner.UpdateDicts(unit, m_playerManager.startNode, unit.currentNode);
+        m_unitDatabase.UpdateDicts(unit, m_playerManager.startNode, unit.currentNode);
         unit.hasMoved = true;
         if (unit.actionPoints < 1)
         {

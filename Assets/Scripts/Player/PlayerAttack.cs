@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    public void Attack(PlayerSpawner playerSpawner, Node enemyNode, Unit unit)
+    public void Attack(UnitDatabase unitDatabase, Node enemyNode, Unit unit)
     {
-        Unit enemyUnit = playerSpawner.UnitNodeMap[enemyNode];
+        Unit enemyUnit = unitDatabase.UnitNodeMap[enemyNode];
         Debug.Log("(B4Hit)Enemy Health: " + enemyUnit.health);
         enemyUnit.health -= unit.baseAttackDamage;
         Debug.Log("(After)Enemy Health: " + enemyUnit.health);

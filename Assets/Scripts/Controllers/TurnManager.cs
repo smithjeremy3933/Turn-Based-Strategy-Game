@@ -8,7 +8,7 @@ public enum Turn {
 
 public class TurnManager : MonoBehaviour
 {
-    PlayerSpawner m_playerSpawner;
+    UnitDatabase m_unitDatabase;
     PlayerManager m_playerManager;
     ActionList m_actionList;
     int m_turnNumber = 1;
@@ -16,10 +16,10 @@ public class TurnManager : MonoBehaviour
 
     public void EndTurn()
     {
-        m_playerSpawner = FindObjectOfType<PlayerSpawner>();
+        m_unitDatabase = FindObjectOfType<UnitDatabase>();
         m_playerManager = FindObjectOfType<PlayerManager>();
         m_actionList = FindObjectOfType<ActionList>();
-        List<Unit> playerUnits = m_playerSpawner.GetComponent<PlayerSpawner>().PlayerUnits;
+        List<Unit> playerUnits = m_unitDatabase.GetComponent<UnitDatabase>().PlayerUnits;
         m_playerUnits = playerUnits;
         ResetStats(playerUnits);
         if (m_playerManager.currentUnit != null)

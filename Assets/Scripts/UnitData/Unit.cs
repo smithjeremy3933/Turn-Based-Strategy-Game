@@ -9,6 +9,7 @@ public enum UnitType
 }
 public class Unit
 {
+    public float unitID;
     public UnitType unitType = UnitType.player;
     public int xIndex = -1;
     public int yIndex = -1;
@@ -17,7 +18,10 @@ public class Unit
     public int health = 100;
     public int baseAttackDamage = 10;
     public float actionPoints = 7f;
+
     public List<Unit> surroundingEnemies;
+    public List<Item> unitInventory;
+
     public bool hasMoved = false;
     public bool isWaiting = false;
     public bool isSelected = false;
@@ -27,7 +31,6 @@ public class Unit
 
     public GameObject gameObject;
     public Vector3 position;
-
     public Node currentNode;
 
     public Unit( int xIndex, int yIndex)
@@ -41,11 +44,12 @@ public class Unit
     {
         this.currentNode = node;
         this.unitType = unitType;
+        this.unitID = Random.Range(100f, 10000f);
     }
 
-    public void Attack(PlayerSpawner playerSpawner, Node enemyNode)
+    public void Attack(UnitDatabase unitDatabase, Node enemyNode)
     {
-        Unit enemyUnit = playerSpawner.UnitNodeMap[enemyNode];
+        Unit enemyUnit = unitDatabase.UnitNodeMap[enemyNode];
         enemyUnit.health -= baseAttackDamage;
     }
 
@@ -58,18 +62,18 @@ public class Unit
         isPathfinding = false;
     }
 
-    public void GetUnitNeighbors(Node hitNode, Unit unit, Graph graph, PlayerSpawner playerSpawner)
+    public void GetUnitNeighbors(Node hitNode, Unit unit, Graph graph, UnitDatabase unitDatabase)
     {
         ResetSurroundingEnemies(unit);
         surroundingEnemies = new List<Unit>();
         var hitNodesNieghbors = graph.GetNeighbors(hitNode.xIndex, hitNode.yIndex);
         foreach (Node node in hitNodesNieghbors)
         {
-            if (playerSpawner.UnitNodeMap.ContainsKey(node))
+            if (unitDatabase.UnitNodeMap.ContainsKey(node))
             {
-                if (playerSpawner.UnitNodeMap[node] != null)
+                if (unitDatabase.UnitNodeMap[node] != null)
                 {
-                    Unit enemy = playerSpawner.UnitNodeMap[node];
+                    Unit enemy = unitDatabase.UnitNodeMap[node];
                     if (enemy.unitType == UnitType.enemy)
                     {
                         unit.surroundingEnemies.Add(enemy);
