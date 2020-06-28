@@ -15,6 +15,6 @@ public class UIController : MonoBehaviour
         unitName.text = "NAME: " + unit.name;
         unitHealth.text = "HP: " + unit.health.ToString();
         unitDamage.text = "DMG: " + unit.baseAttackDamage.ToString();
-        unitActionPoints.text = "AP: " + unit.actionPoints.ToString();
+        unitActionPoints.text = "AP: " + unit.actionPoints.ToString("F2");
     }
 }

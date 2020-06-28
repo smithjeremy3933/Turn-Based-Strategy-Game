@@ -1,13 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MouseController : MonoBehaviour
 {
     public GameObject hoveredGameobject;
+    public LineRenderer lineRenderer;
+    public Color validLineColor = Color.cyan;
+    public Color InvalidLineColor = Color.red;
     Node m_hoveredNode;
     PlayerSpawner m_playerSpawner;
     Graph m_graph;
+    Pathfinder m_pathfinder;
+    PlayerManager m_playerManager;
     float maxDist = 100f;
 
     public Node HoveredNode { get => m_hoveredNode; }
@@ -16,6 +22,10 @@ public class MouseController : MonoBehaviour
     {
         m_playerSpawner = FindObjectOfType<PlayerSpawner>();
         m_graph = FindObjectOfType<Graph>();
+        m_pathfinder = FindObjectOfType<Pathfinder>();
+        m_playerManager = FindObjectOfType<PlayerManager>();
+        lineRenderer.enabled = false;
+        lineRenderer.material.color = validLineColor;
     }
 
     void Update()
@@ -71,9 +81,49 @@ public class MouseController : MonoBehaviour
             {
                 return;
             }
+            if (hitNode != null && m_playerManager.currentUnit != null)
+            {
+                if (m_playerManager.currentUnit.isPathfinding)
+                {
+                    Unit currentUnit = m_playerManager.currentUnit;
+                    List<Node> currentPath = m_pathfinder.GetPath(hitNode, currentUnit);
+                    if (currentUnit != null && currentPath != null)
+                    {
+                        DrawPath(currentPath.ToArray<Node>(), currentUnit);
+                    }
+                }
+            }
             m_hoveredNode = hitNode;
             return;
         }
+    }
+
+    void DrawPath(Node[] path, Unit unit)
+    {
+        if (path.Length == 0)
+        {
+            lineRenderer.enabled = false;
+            return;
+        }
+        lineRenderer.enabled = true;        
+        float distanceBetweenNodes = m_graph.GetNodeDistance(path[0], path[path.Length - 1]);
+        if (distanceBetweenNodes > unit.actionPoints)
+        {
+            lineRenderer.material.color = InvalidLineColor;
+        } else
+        {
+            lineRenderer.material.color = validLineColor;
+        }
+       
+        Vector3[] ps = new Vector3[path.Length];
+
+        for (int i = 0; i < path.Length; i++)
+        {
+            ps[i] = path[i].position + (Vector3.up *0.1f);
+        }
+
+        lineRenderer.positionCount = ps.Length;
+        lineRenderer.SetPositions(ps);
     }
 
     void SelectObject(GameObject obj)

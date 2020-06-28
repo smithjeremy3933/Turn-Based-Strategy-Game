@@ -23,7 +23,6 @@ public class PlayerManager : MonoBehaviour
     Ray ray;
     List<Node> currentPath;
     UIController uiController;
-    LineRenderer lineRenderer;
     float maxDistance = 100f;
     bool isEnemySelected = false;
 
@@ -35,7 +34,6 @@ public class PlayerManager : MonoBehaviour
         m_playerSpawner = FindObjectOfType<PlayerSpawner>();
         m_actionList = FindObjectOfType<ActionList>();
         uiController = FindObjectOfType<UIController>();
-        lineRenderer = GetComponent<LineRenderer>();
     }
 
     private void Update()
@@ -102,6 +100,7 @@ public class PlayerManager : MonoBehaviour
                         if (!currentUnit.hasMoved && !isEnemySelected)
                         {
                             HighlightUnitMovementRange(currentUnit);
+                            currentUnit.isPathfinding = true;
                             uiController.UpdateUnitSelectText(currentUnit);
                             return;
                         }
@@ -142,10 +141,6 @@ public class PlayerManager : MonoBehaviour
                     goalNode = hitNode;
                     PlayerMovement playerMovement = currentUnitView.GetComponent<PlayerMovement>();
                     playerMovement.Move(hitNode, currentUnit, currentUnitView, m_pathfinder);
-                    //if (!currentUnit.isWaiting)
-                    //{
-                    //    PromptUnitAction(currentUnit);
-                    //}
                 }
             }         
         }
@@ -190,29 +185,6 @@ public class PlayerManager : MonoBehaviour
         return null;
     }
 
-    // Need to add a method that searches for Node under mouse 
-    // and does a pathfinding search to that node. Then I can
-    // pass that path into the DrawPath function.
-    void DrawPath(Node[] path, GameObject unitView)
-    {
-        if (path.Length == 0)
-        {
-            lineRenderer.enabled = false;
-            return;
-        }
-        lineRenderer.enabled = true;
-
-        Vector3[] ps = new Vector3[path.Length];
-
-        for (int i = 0; i < path.Length; i++)
-        {
-            ps[i] = unitView.transform.position + (Vector3.up * 0.01f);
-        }
-
-        lineRenderer.positionCount = ps.Length;
-        lineRenderer.SetPositions(ps);
-    }
-
     private static void ResetUnitSelection(PlayerSpawner playerSpawner)
     {
         foreach (Unit u in playerSpawner.AllUnits)
@@ -230,9 +202,10 @@ public class PlayerManager : MonoBehaviour
     {
         unit.isSelected = false;
         unit.isAttacking = false;
+        unit.isPathfinding = false;
         isGoalSelected = false;
         isEnemySelected = false;
-        // lineRenderer.enabled = false;
+        m_mouseController.lineRenderer.enabled = false;
         currentUnit = null;
         currentUnitView = null;
         startNode = null;

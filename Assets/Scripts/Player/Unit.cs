@@ -23,6 +23,7 @@ public class Unit
     public bool isSelected = false;
     public bool isSurrEnemies = false;
     public bool isAttacking = false;
+    public bool isPathfinding = false;
 
     public GameObject gameObject;
     public Vector3 position;
@@ -54,6 +55,7 @@ public class Unit
         hasMoved = false;
         isWaiting = false;
         isAttacking = false;
+        isPathfinding = false;
     }
 
     public void GetUnitNeighbors(Node hitNode, Unit unit, Graph graph, PlayerSpawner playerSpawner)

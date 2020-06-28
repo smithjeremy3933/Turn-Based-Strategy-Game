@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     PlayerSpawner m_playerSpawner;
     UIController uiController;
     List<Node> currentPath;
+    Graph m_graph;
     float moveDelay = 0.2f;
 
     private void Start()
@@ -20,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(Node hitNode, Unit unit, GameObject unitView, Pathfinder pathfinder)
     {
+        unit.isPathfinding = false;
         currentPath = pathfinder.GetPath(hitNode, unit);
         m_playerManager.CurrentPath = currentPath;
         if (currentPath != null && hitNode != null)
@@ -40,7 +42,10 @@ public class PlayerMovement : MonoBehaviour
             yield return new WaitForSeconds(moveDelay);
             if (node != m_playerManager.startNode)
             {
-                unit.actionPoints -= node.movementCost;
+                Graph graph = FindObjectOfType<Graph>();
+                m_graph = graph;
+                float distanceBetweenNodes = m_graph.GetNodeDistance(node.previous, node);
+                unit.actionPoints -= distanceBetweenNodes;
             }
 
             if (isEnemySelected)
@@ -53,13 +58,9 @@ public class PlayerMovement : MonoBehaviour
                 UpdateUnitPosData(uiController, unit, unitView, node);
             }
         }
-        //if (isEnemySelected)
-        //{
-        //    unit.Attack(m_playerSpawner, goalNode);
-        //}
         m_playerSpawner.UpdateDicts(unit, m_playerManager.startNode, unit.currentNode);
         unit.hasMoved = true;
-        if (unit.actionPoints <= 0)
+        if (unit.actionPoints < 1)
         {
             unit.isWaiting = true;
         }

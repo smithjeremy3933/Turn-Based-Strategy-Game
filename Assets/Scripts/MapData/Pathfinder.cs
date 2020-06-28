@@ -40,7 +40,7 @@ public class Pathfinder : MonoBehaviour
         m_startNode = start;
         m_goalNode = goal;
 
-        ShowColors(graphView, start, goal);
+        // ShowColors(graphView, start, goal);
         
         m_frontierNodes = new PriorityQueue<Node>();
         m_frontierNodes.Enqueue(start);
@@ -173,6 +173,16 @@ public class Pathfinder : MonoBehaviour
         return path;
     }
 
+    public List<Node> GetPath(Node hitNode, Unit unit)
+    {
+        Graph graph = FindObjectOfType<Graph>();
+        GraphView graphView = FindObjectOfType<GraphView>();
+        Init(graph, graphView, unit.currentNode, hitNode);
+        List<Node> currentPath;
+        currentPath = CalculatePath(unit.currentNode, hitNode, unit);
+        return currentPath;
+    }
+
     public List<Node> CalculatePath(Node start, Node goal, Unit unit)
     {
         List<Node> calcPath = SearchRoutine(unit);
@@ -182,17 +192,6 @@ public class Pathfinder : MonoBehaviour
             return null;
         }
         return calcPath;
-    }
-
-    public List<Node> GetPath(Node hitNode, Unit unit)
-    {
-        Graph graph = FindObjectOfType<Graph>();
-        GraphView graphView = FindObjectOfType<GraphView>();
-        Init(graph, graphView, unit.currentNode, hitNode);
-        Debug.Log("process move");
-        List<Node> currentPath;
-        currentPath = CalculatePath(unit.currentNode, hitNode, unit);
-        return currentPath;
     }
 
     public void ClearPath()
