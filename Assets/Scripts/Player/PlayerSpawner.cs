@@ -5,17 +5,23 @@ using UnityEngine;
 public class PlayerSpawner : MonoBehaviour
 {
     [SerializeField]public UnitDatabase unitDatabase;
+    [SerializeField] public Inventory inventory;
 
     public Graph graph;
     public PlayerUnitView playerUnitView;
     public EnemyUnitView enemyUnitView;
+    Inventory m_inventory;
 
     public void SpawnPlayer(Graph graph, GameObject player, int xIndex, int yIndex)
     {
+        ItemDatabase itemDatabase = FindObjectOfType<ItemDatabase>();
+        itemDatabase.BuildDatabase();
+        m_inventory = FindObjectOfType<Inventory>();
         Node node = graph.GetNodeAt(xIndex, yIndex);
         Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.player);
         newUnit.currentNode = node;
         newUnit.position = node.position;
+        inventory.SpawnItemToUnit(newUnit, 0);
         unitDatabase.PlayerUnits.Add(newUnit);
         unitDatabase.AllUnits.Add(newUnit);
         GameObject instance = Instantiate(player, node.position, Quaternion.identity, this.transform);
@@ -41,6 +47,7 @@ public class PlayerSpawner : MonoBehaviour
         Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.enemy);
         newUnit.currentNode = node;
         newUnit.position = node.position;
+        inventory.SpawnItemToUnit(newUnit, 0);
         unitDatabase.AllUnits.Add(newUnit);
 
         GameObject instance = Instantiate(enemy, node.position, Quaternion.identity, this.transform);      

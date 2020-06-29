@@ -7,14 +7,14 @@ public class ItemDatabase : MonoBehaviour
 {
     public List<Item> items = new List<Item>();
 
-    void Awake()
-    {
-        BuildDatabase();
-    }
-
     public Item GetItem(int id)
     {
-        return items.Find(item => item.id == id);
+        Item currentItem = items.Find(item => item.id == id);
+        if (currentItem != null)
+        {
+            return currentItem;
+        }
+        return null;
     }
 
     public Item GetItem(string itemName)
@@ -22,21 +22,21 @@ public class ItemDatabase : MonoBehaviour
         return items.Find(item => item.title == itemName);
     }
 
-    private void BuildDatabase()
+    public void BuildDatabase()
     {
         items = new List<Item>() {
                 new Item(0, "Iron Sword", "A common iron Sword.",
                 new Dictionary<string, float>
                 {
-                    { "Power: ", 15f },
-                    { "AP Cost: ", 3f }
+                    { "ATK", 15f },
+                    { "APC", 3f }
                 }),
 
                 new Item(1, "Steel Sword", "A common steel Sword.",
                 new Dictionary<string, float>
                 {
-                    { "Power: ", 25f },
-                    { "AP Cost: ", 4f }
+                    { "ATK", 25f },
+                    { "APC", 4f }
                 }),
             };
     }

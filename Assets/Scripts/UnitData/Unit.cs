@@ -20,7 +20,7 @@ public class Unit
     public float actionPoints = 7f;
 
     public List<Unit> surroundingEnemies;
-    public List<Item> unitInventory;
+    public List<Item> unitInventory = new List<Item>();
 
     public bool hasMoved = false;
     public bool isWaiting = false;

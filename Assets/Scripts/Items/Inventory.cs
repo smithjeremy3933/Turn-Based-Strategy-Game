@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] public ItemDatabase itemDatabase;
 
-    // Update is called once per frame
-    void Update()
+    public void SpawnItemToUnit(Unit unit, int ID)
     {
-        
+        Item item = itemDatabase.GetItem(ID);
+        unit.unitInventory.Add(item);
     }
 }
