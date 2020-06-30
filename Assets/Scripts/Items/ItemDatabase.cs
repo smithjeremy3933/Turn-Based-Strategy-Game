@@ -29,14 +29,18 @@ public class ItemDatabase : MonoBehaviour
                 new Dictionary<string, float>
                 {
                     { "ATK", 15f },
-                    { "APC", 3f }
+                    { "APC", 3f },
+                    { "HIT", 0f },
+                    { "CRIT", 2f }
                 }),
 
                 new Item(1, "Steel Sword", "A common steel Sword.",
                 new Dictionary<string, float>
                 {
                     { "ATK", 25f },
-                    { "APC", 4f }
+                    { "APC", 4f },
+                    { "HIT", 0f },
+                    { "CRIT", 2f }
                 }),
             };
     }

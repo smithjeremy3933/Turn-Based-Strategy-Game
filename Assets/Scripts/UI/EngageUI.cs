@@ -27,12 +27,29 @@ public class EngageUI : MonoBehaviour
     [SerializeField] public Text slotOneHIT;
     [SerializeField] public Text slotOneCRIT;
 
+    [SerializeField] public Text slotTwoItemName;
+    [SerializeField] public Text slotTwoATK;
+    [SerializeField] public Text slotTwoAPC;
+    [SerializeField] public Text slotTwoHIT;
+    [SerializeField] public Text slotTwoCRIT;
+
+    Item currentSelectedWeapon;
+
     public void SetEngageUI(Unit playerUnit, Unit enemyUnit)
     {
+        SelectWeapon(playerUnit);
         playerUnitAP.text = "AP: " + playerUnit.actionPoints.ToString("F2");
         playerUnitName.text = playerUnit.name;
         playerUnitHP.text = "HP: " + playerUnit.health.ToString();
-        playerUnitATK.text = "ATK: " + playerUnit.baseAttackDamage.ToString();
+        playerUnitATK.text = "ATK: " + playerUnit.equippedATK.ToString();
+        playerUnitHIT.text = "HIT: " + playerUnit.baseHIT.ToString();
+        playerUnitCRIT.text = "CRIT: " + playerUnit.baseCRIT.ToString();
+
+        enemyUnitName.text = enemyUnit.name;
+        enemyUnitHP.text = "HP: " + enemyUnit.health.ToString();
+        enemyUnitATK.text = "ATK: " + enemyUnit.equippedATK.ToString();
+        enemyUnitHIT.text = "HIT: " + enemyUnit.baseHIT.ToString();
+        enemyUnitCRIT.text = "CRIT: " + enemyUnit.baseCRIT.ToString();
 
         if (playerUnit.unitInventory[0] != null)
         {
@@ -41,7 +58,19 @@ public class EngageUI : MonoBehaviour
             slotOneAPC.text = playerUnit.unitInventory[0].stats["APC"].ToString();
         }
 
+        if (playerUnit.unitInventory[1] != null)
+        {
+            slotTwoItemName.text = playerUnit.unitInventory[1].title;
+            slotTwoATK.text = playerUnit.unitInventory[1].stats["ATK"].ToString();
+            slotTwoAPC.text = playerUnit.unitInventory[1].stats["APC"].ToString();
+        }
     }
+
+    public void SelectWeapon(Unit unit)
+    {
+        currentSelectedWeapon = unit.equippedWeapon;
+    }
+
 
     public void ShowEngagePanel(Unit unit)
     {

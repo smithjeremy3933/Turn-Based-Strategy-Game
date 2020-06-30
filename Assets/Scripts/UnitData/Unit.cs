@@ -14,10 +14,17 @@ public class Unit
     public int xIndex = -1;
     public int yIndex = -1;
     public string name = "Steve";
+
     public float movementRange = 5f;
-    public int health = 100;
-    public int baseAttackDamage = 10;
+    public float health = 100;
+
+    public float baseAttackDamage = 10f;
+    public float equippedATK;
+
+    public float baseHIT = 80f;
+    public float baseCRIT = 5f;
     public float actionPoints = 7f;
+    public Item equippedWeapon;
 
     public List<Unit> surroundingEnemies;
     public List<Item> unitInventory = new List<Item>();

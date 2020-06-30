@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -40,6 +41,9 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
             LayerMask unitMask = LayerMask.GetMask("Unit");
             LayerMask tileMask = LayerMask.GetMask("Tile");
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);

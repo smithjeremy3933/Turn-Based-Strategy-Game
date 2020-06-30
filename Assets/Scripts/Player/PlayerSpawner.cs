@@ -10,18 +10,16 @@ public class PlayerSpawner : MonoBehaviour
     public Graph graph;
     public PlayerUnitView playerUnitView;
     public EnemyUnitView enemyUnitView;
-    Inventory m_inventory;
 
     public void SpawnPlayer(Graph graph, GameObject player, int xIndex, int yIndex)
     {
         ItemDatabase itemDatabase = FindObjectOfType<ItemDatabase>();
         itemDatabase.BuildDatabase();
-        m_inventory = FindObjectOfType<Inventory>();
         Node node = graph.GetNodeAt(xIndex, yIndex);
         Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.player);
         newUnit.currentNode = node;
         newUnit.position = node.position;
-        inventory.SpawnItemToUnit(newUnit, 0);
+        SetUnitWeapons(newUnit);
         unitDatabase.PlayerUnits.Add(newUnit);
         unitDatabase.AllUnits.Add(newUnit);
         GameObject instance = Instantiate(player, node.position, Quaternion.identity, this.transform);
@@ -38,6 +36,16 @@ public class PlayerSpawner : MonoBehaviour
         else
         {
             unitDatabase.UnitNodeMap[node] = newUnit;
+        }
+    }
+
+    private void SetUnitWeapons(Unit newUnit)
+    {
+        if (newUnit != null)
+        {
+            inventory.SpawnItemToUnit(newUnit, 0);
+            inventory.SpawnItemToUnit(newUnit, 1);
+            newUnit.equippedWeapon = newUnit.unitInventory[0];
         }
     }
 
