@@ -13,12 +13,13 @@ public class PlayerManager : MonoBehaviour
     public Color movementRangeColor = Color.cyan;
     public bool isGoalSelected;
     public List<Node> CurrentPath { get => currentPath; set => currentPath = value; }
+    public PlayerAttack CurrentPlayerAttack { get => m_currentPlayerAttack; set => m_currentPlayerAttack = value; }
 
     Graph m_graph;
     Pathfinder m_pathfinder;
     MouseController m_mouseController;
     UnitDatabase m_unitDatabase;
-    PlayerAttack m_playerAttack;
+    PlayerAttack m_currentPlayerAttack;
     PlayerMovement m_playerMovement;
     ActionList m_actionList;
     Ray ray;
@@ -69,8 +70,16 @@ public class PlayerManager : MonoBehaviour
                 {
                     if (currentUnit.isSurrEnemies && m_unitDatabase.UnitNodeMap.ContainsKey(hitNode))
                     {
+                        Unit enemy = m_unitDatabase.UnitNodeMap[hitNode];
+                        if (enemy.unitType == UnitType.player)
+                            return;
+
                         PlayerAttack playerAttack = currentUnitView.GetComponent<PlayerAttack>();
-                        playerAttack.Attack(m_unitDatabase, hitNode, currentUnit);
+                        m_currentPlayerAttack = playerAttack;
+                        if (enemy != null && currentUnit != null)
+                        {
+                            StartCoroutine(playerAttack.Attack(currentUnit, enemy));
+                        }
                     }
                     else
                     {
@@ -132,7 +141,7 @@ public class PlayerManager : MonoBehaviour
 
                 Node hitNode = m_graph.GetNodeAt(xIndex, zIndex);
 
-                if (hitNode != null && startNode != null && !m_unitDatabase.UnitNodeMap.ContainsKey(hitNode))
+                if (hitNode != null && startNode != null && !m_unitDatabase.UnitNodeMap.ContainsKey(hitNode) && !currentUnit.isAttacking)
                 {
                     float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitNode);
                     if (currentUnit.actionPoints < distanceBetweenNodes || currentUnit.hasMoved)
@@ -212,6 +221,7 @@ public class PlayerManager : MonoBehaviour
         m_mouseController.lineRenderer.enabled = false;
         currentUnit = null;
         currentUnitView = null;
+        m_currentPlayerAttack = null;
         startNode = null;
         goalNode = null;
         currentPath = null;

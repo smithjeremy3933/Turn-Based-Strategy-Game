@@ -4,11 +4,7 @@ using UnityEngine;
 
 public class WeaponSelectButton : MonoBehaviour
 {
-    WeaponSelectButton[] weaponButtons;
-    ItemSlot[] itemSlots;
     Item currentItem;
-    EngageUI m_engageUI;
-
 
     [SerializeField] public Item CurrentItem { get => currentItem; set => currentItem = value; }
 
