@@ -13,7 +13,7 @@ public class Inventory : MonoBehaviour
         SetEquippedStats(unit);
     }
 
-    public void SetEquippedStats(Unit unit)
+    void SetEquippedStats(Unit unit)
     {
         unit.equippedATK = unit.baseAttackDamage + unit.unitInventory[0].stats["ATK"];
     }

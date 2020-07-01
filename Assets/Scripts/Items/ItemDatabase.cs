@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ItemDatabase : MonoBehaviour
 {
+    [SerializeField] public Sprite swordIcon;
     public List<Item> items = new List<Item>();
 
     public Item GetItem(int id)
@@ -25,21 +26,21 @@ public class ItemDatabase : MonoBehaviour
     public void BuildDatabase()
     {
         items = new List<Item>() {
-                new Item(0, "Iron Sword", "A common iron Sword.",
+                new Item(0, "Iron Sword", "A common iron Sword.", swordIcon ,
                 new Dictionary<string, float>
                 {
                     { "ATK", 15f },
                     { "APC", 3f },
-                    { "HIT", 0f },
+                    { "HIT", 2f },
                     { "CRIT", 2f }
                 }),
 
-                new Item(1, "Steel Sword", "A common steel Sword.",
+                new Item(1, "Steel Sword", "A common steel Sword.", swordIcon ,
                 new Dictionary<string, float>
                 {
                     { "ATK", 25f },
                     { "APC", 4f },
-                    { "HIT", 0f },
+                    { "HIT", 3f },
                     { "CRIT", 2f }
                 }),
             };

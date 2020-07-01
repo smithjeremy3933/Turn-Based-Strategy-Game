@@ -7,13 +7,15 @@ public class Item
     public int id;
     public string title;
     public string description;
+    public Sprite icon;
     public Dictionary<string, float> stats = new Dictionary<string, float>();
 
-    public Item(int id, string title, string description, Dictionary<string, float> stats)
+    public Item(int id, string title, string description, Sprite icon, Dictionary<string, float> stats)
     {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.icon = icon;
         this.stats = stats;
     }
 
