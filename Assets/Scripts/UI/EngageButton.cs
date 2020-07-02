@@ -13,6 +13,7 @@ public class EngageButton : MonoBehaviour
             if (playerAttack != null)
             {
                 playerAttack.IsEngagedClicked = true;
+                playerManager.DeselectUnit();
                 Debug.Log("Unit made a decision.");
             }
         }

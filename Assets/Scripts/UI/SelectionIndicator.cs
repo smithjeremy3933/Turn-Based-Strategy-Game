@@ -5,6 +5,7 @@ using UnityEngine;
 public class SelectionIndicator : MonoBehaviour
 {
     MouseController m_mouseController;
+    [SerializeField] GameObject selectionIndicator;
 
     void Start()
     {
@@ -17,5 +18,15 @@ public class SelectionIndicator : MonoBehaviour
         {
             transform.position = m_mouseController.HoveredNode.position;
         }
+    }
+
+    public void HideSelectionIndicator()
+    {
+        selectionIndicator.SetActive(false);
+    }
+
+    public void ShowSelectionIndicator()
+    {
+        selectionIndicator.SetActive(true);
     }
 }

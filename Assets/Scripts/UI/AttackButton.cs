@@ -10,6 +10,7 @@ public class AttackButton : MonoBehaviour
         PlayerManager playerManager = FindObjectOfType<PlayerManager>();
         if (playerManager.currentUnit != null)
         {
+            playerManager.IsSelectingEnemy = true;
             SetUnitToAttack(playerManager.currentUnit);
             Debug.Log("Unit is in attack mode.");
         }

@@ -20,14 +20,15 @@ public class WeaponSelectButton : MonoBehaviour
     public void SwitchWeapon(Unit playerUnit)
     {
         EngageUI engageUI = FindObjectOfType<EngageUI>();
-        float calcATK = playerUnit.baseAttackDamage + currentItem.stats["ATK"];
-        float calcHIT = playerUnit.baseHIT + currentItem.stats["HIT"];
-        float calcCRIT = playerUnit.baseCRIT + currentItem.stats["CRIT"];
-        float calcAPC = playerUnit.actionPoints - currentItem.stats["APC"];
-        engageUI.playerUnitATK.text = "ATK: " + calcATK.ToString();
-        engageUI.playerUnitHIT.text = "HIT: " + calcHIT.ToString();
-        engageUI.playerUnitCRIT.text = "CRIT: " + calcCRIT.ToString();
-        engageUI.playerUnitAP.text = "AP: " + calcAPC.ToString();
-        playerUnit.equippedWeapon = currentItem;
+        playerUnit.GetWeaponStats(playerUnit, currentItem);
+        UpdateUI(playerUnit, engageUI);
+    }
+
+    private static void UpdateUI(Unit playerUnit, EngageUI engageUI)
+    {
+        engageUI.playerUnitATK.text = "ATK: " + playerUnit.equippedATK.ToString();
+        engageUI.playerUnitHIT.text = "HIT: " + playerUnit.equippedHIT.ToString();
+        engageUI.playerUnitCRIT.text = "CRIT: " + playerUnit.equippedCRIT.ToString();
+        engageUI.playerUnitAP.text = "AP: " + playerUnit.calcAPC.ToString();
     }
 }

@@ -40,10 +40,14 @@ public class EngageUI : MonoBehaviour
 
     public void SetEngageUI(Unit playerUnit, Unit enemyUnit)
     {
-        SetDefaultWeapon(playerUnit);
-        SetWeaponButtons(playerUnit);
-        SetInitialUnitStats(playerUnit, enemyUnit);
-        SetWeaponSlots(playerUnit);
+        if (playerUnit != null && enemyUnit != null)
+        {
+            playerUnit.GetEquippedStats(playerUnit);
+            enemyUnit.GetEquippedStats(enemyUnit);
+            SetWeaponButtons(playerUnit);
+            SetInitialUnitStats(playerUnit, enemyUnit);
+            SetWeaponSlots(playerUnit);
+        }
     }
 
     private void SetWeaponSlots(Unit playerUnit)
@@ -69,18 +73,18 @@ public class EngageUI : MonoBehaviour
 
     private void SetInitialUnitStats(Unit playerUnit, Unit enemyUnit)
     {
-        playerUnitAP.text = "AP: " + playerUnit.actionPoints.ToString("F2");
+        playerUnitAP.text = "AP: " + playerUnit.calcAPC.ToString("F2");
         playerUnitName.text = playerUnit.name;
         playerUnitHP.text = "HP: " + playerUnit.health.ToString();
         playerUnitATK.text = "ATK: " + playerUnit.equippedATK.ToString();
-        playerUnitHIT.text = "HIT: " + playerUnit.baseHIT.ToString();
-        playerUnitCRIT.text = "CRIT: " + playerUnit.baseCRIT.ToString();
+        playerUnitHIT.text = "HIT: " + playerUnit.equippedHIT.ToString();
+        playerUnitCRIT.text = "CRIT: " + playerUnit.equippedCRIT.ToString();
 
         enemyUnitName.text = enemyUnit.name;
         enemyUnitHP.text = "HP: " + enemyUnit.health.ToString();
         enemyUnitATK.text = "ATK: " + enemyUnit.equippedATK.ToString();
-        enemyUnitHIT.text = "HIT: " + enemyUnit.baseHIT.ToString();
-        enemyUnitCRIT.text = "CRIT: " + enemyUnit.baseCRIT.ToString();
+        enemyUnitHIT.text = "HIT: " + enemyUnit.equippedHIT.ToString();
+        enemyUnitCRIT.text = "CRIT: " + enemyUnit.equippedCRIT.ToString();
     }
 
     public void SetWeaponButtons(Unit playerUnit)
@@ -93,16 +97,6 @@ public class EngageUI : MonoBehaviour
             }
         }
     }
-
-    public void SetDefaultWeapon(Unit unit)
-    {
-        if (defaultWeapon == null)
-        {
-            defaultWeapon = unit.equippedWeapon;
-            unit.equippedATK = unit.baseAttackDamage + unit.equippedWeapon.stats["ATK"];
-        }
-    }
-
 
     public void ShowEngagePanel(Unit unit)
     {

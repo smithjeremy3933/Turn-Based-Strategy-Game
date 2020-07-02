@@ -9,21 +9,27 @@ public enum UnitType
 }
 public class Unit
 {
+    // Unit Identification
     public float unitID;
     public UnitType unitType = UnitType.player;
-    public int xIndex = -1;
-    public int yIndex = -1;
-    public string name = "Steve";
+    public string name;
 
+    // Unit Stats
     public float movementRange = 5f;
     public float health = 100;
 
     public float baseAttackDamage = 10f;
     public float equippedATK;
 
-    public float baseHIT = 80f;
+    public float baseHIT = 90f;
+    public float equippedHIT;
+
     public float baseCRIT = 5f;
+    public float equippedCRIT;
+
     public float actionPoints = 7f;
+    public float calcAPC;
+
     public Item equippedWeapon;
 
     public List<Unit> surroundingEnemies;
@@ -36,9 +42,12 @@ public class Unit
     public bool isAttacking = false;
     public bool isPathfinding = false;
 
+    // Positional Data
     public GameObject gameObject;
     public Vector3 position;
     public Node currentNode;
+    public int xIndex = -1;
+    public int yIndex = -1;
 
     public Unit( int xIndex, int yIndex)
     {
@@ -46,18 +55,13 @@ public class Unit
         this.yIndex = yIndex;
     }
 
-    public Unit(int xIndex, int yIndex, Node node, UnitType unitType)
+    public Unit(int xIndex, int yIndex, Node node, UnitType unitType, string name)
         : this(xIndex, yIndex)
     {
         this.currentNode = node;
         this.unitType = unitType;
+        this.name = name;
         this.unitID = Random.Range(100f, 10000f);
-    }
-
-    public void Attack(UnitDatabase unitDatabase, Node enemyNode)
-    {
-        Unit enemyUnit = unitDatabase.UnitNodeMap[enemyNode];
-        enemyUnit.health -= baseAttackDamage;
     }
 
     public void ProcessTurn()
@@ -88,6 +92,29 @@ public class Unit
                     }
                 }
             }
+        }
+    }
+
+    public void GetWeaponStats(Unit playerUnit, Item currentItem)
+    {
+        if (playerUnit != null || currentItem != null)
+        {
+            equippedWeapon = currentItem;
+            equippedATK = playerUnit.baseAttackDamage + currentItem.stats["ATK"];
+            equippedHIT = playerUnit.baseHIT + currentItem.stats["HIT"];
+            equippedCRIT = playerUnit.baseCRIT + currentItem.stats["CRIT"];
+            calcAPC = playerUnit.actionPoints - currentItem.stats["APC"];
+        }
+    }
+
+    public void GetEquippedStats(Unit playerUnit)
+    {
+        if (playerUnit != null || equippedWeapon != null)
+        {
+            equippedATK = playerUnit.baseAttackDamage + equippedWeapon.stats["ATK"];
+            equippedHIT = playerUnit.baseHIT + equippedWeapon.stats["HIT"];
+            equippedCRIT = playerUnit.baseCRIT + equippedWeapon.stats["CRIT"];
+            calcAPC = playerUnit.actionPoints - equippedWeapon.stats["APC"];
         }
     }
 

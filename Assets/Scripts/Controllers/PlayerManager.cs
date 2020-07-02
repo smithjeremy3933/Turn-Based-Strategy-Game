@@ -14,6 +14,7 @@ public class PlayerManager : MonoBehaviour
     public bool isGoalSelected;
     public List<Node> CurrentPath { get => currentPath; set => currentPath = value; }
     public PlayerAttack CurrentPlayerAttack { get => m_currentPlayerAttack; set => m_currentPlayerAttack = value; }
+    public bool IsSelectingEnemy { get => isSelectingEnemy; set => isSelectingEnemy = value; }
 
     Graph m_graph;
     Pathfinder m_pathfinder;
@@ -27,6 +28,7 @@ public class PlayerManager : MonoBehaviour
     UIController uiController;
     float maxDistance = 100f;
     bool isEnemySelected = false;
+    bool isSelectingEnemy = false;
 
     private void Start()
     {
@@ -88,7 +90,7 @@ public class PlayerManager : MonoBehaviour
                 }
             }
 
-            if (hasHitUnit)
+            if (hasHitUnit && !isSelectingEnemy)
             {
                 // Selecting a unit
                 int xIndex = (int)hit.transform.position.x;
@@ -97,8 +99,8 @@ public class PlayerManager : MonoBehaviour
                 Node hitNode = m_graph.GetNodeAt(xIndex, zIndex);
                 if (hitNode != null)
                 {
-                    currentUnitView = m_mouseController.hoveredGameobject;
                     currentUnit = GetUnit(m_unitDatabase, hitNode);
+                    currentUnitView = m_mouseController.hoveredGameobject;
                     if (!currentUnit.isWaiting)
                     {
                         if (currentUnit.unitType == UnitType.enemy)
@@ -133,7 +135,7 @@ public class PlayerManager : MonoBehaviour
                 }               
             }
 
-            if (hasHitNode && currentUnit != null && !isEnemySelected)
+            if (hasHitNode && currentUnit != null && !isEnemySelected && !isSelectingEnemy)
             {
                 // Moving a unit.
                 int xIndex = (int)hit.transform.position.x;
@@ -152,8 +154,11 @@ public class PlayerManager : MonoBehaviour
                     // A goal node was hit. Need to validate, move, and update data.
                     isGoalSelected = true;
                     goalNode = hitNode;
-                    PlayerMovement playerMovement = currentUnitView.GetComponent<PlayerMovement>();
-                    playerMovement.Move(hitNode, currentUnit, currentUnitView, m_pathfinder);
+                    if (currentUnitView != null)
+                    {
+                        PlayerMovement playerMovement = currentUnitView.GetComponent<PlayerMovement>();
+                        playerMovement.Move(hitNode, currentUnit, currentUnitView, m_pathfinder);
+                    }
                 }
             }         
         }
@@ -211,6 +216,11 @@ public class PlayerManager : MonoBehaviour
         Debug.Log("Highlight unit's movement range");
     }
 
+    public void DeselectUnit()
+    {
+        DeselectUnit(currentUnit);
+    }
+
     public void DeselectUnit(Unit unit)
     {
         unit.isSelected = false;
@@ -218,6 +228,7 @@ public class PlayerManager : MonoBehaviour
         unit.isPathfinding = false;
         isGoalSelected = false;
         isEnemySelected = false;
+        isSelectingEnemy = false;
         m_mouseController.lineRenderer.enabled = false;
         currentUnit = null;
         currentUnitView = null;

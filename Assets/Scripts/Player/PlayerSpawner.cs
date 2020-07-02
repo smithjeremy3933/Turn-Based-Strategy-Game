@@ -11,12 +11,12 @@ public class PlayerSpawner : MonoBehaviour
     public PlayerUnitView playerUnitView;
     public EnemyUnitView enemyUnitView;
 
-    public void SpawnPlayer(Graph graph, GameObject player, int xIndex, int yIndex)
+    public void SpawnPlayer(Graph graph, GameObject player, int xIndex, int yIndex, string name)
     {
         ItemDatabase itemDatabase = FindObjectOfType<ItemDatabase>();
         itemDatabase.BuildDatabase();
         Node node = graph.GetNodeAt(xIndex, yIndex);
-        Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.player);
+        Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.player, name);
         newUnit.currentNode = node;
         newUnit.position = node.position;
         SetUnitWeapons(newUnit);
@@ -49,13 +49,13 @@ public class PlayerSpawner : MonoBehaviour
         }
     }
 
-    public void SpawnEnemy(Graph graph, GameObject enemy, int xIndex, int yIndex)
+    public void SpawnEnemy(Graph graph, GameObject enemy, int xIndex, int yIndex, string name)
     {
         Node node = graph.GetNodeAt(xIndex, yIndex);
-        Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.enemy);
+        Unit newUnit = new Unit(xIndex, yIndex, node, UnitType.enemy, name);
         newUnit.currentNode = node;
         newUnit.position = node.position;
-        inventory.SpawnItemToUnit(newUnit, 0);
+        SetUnitWeapons(newUnit);
         unitDatabase.AllUnits.Add(newUnit);
 
         GameObject instance = Instantiate(enemy, node.position, Quaternion.identity, this.transform);      

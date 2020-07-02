@@ -17,6 +17,7 @@ public class PlayerAttack : MonoBehaviour
 
         while (isEngaging)
         {
+            // Controlled by EngageButton
             isEngaging = !isEngagedClicked;
             yield return null;
         }
@@ -34,29 +35,54 @@ public class PlayerAttack : MonoBehaviour
         isEngaging = true;
     }
 
-    private void ProcessAttack(Unit unit, Unit enemyUnit)
+    public void ProcessAttack(Unit unit, Unit enemyUnit)
     {
-        m_engageUI.HideEngagePanel();
-        ProcessDamage(unit, enemyUnit);
-        unit.isWaiting = true;
-        unit.isAttacking = false;
-        isEngaging = false;
-        isEngagedClicked = false;
+        if (unit != null && enemyUnit != null && m_engageUI != null)
+        {
+            m_engageUI.HideEngagePanel();
+            if (unit != null)
+            {
+                ProcessHIT(unit, enemyUnit);
+                unit.isWaiting = true;
+                unit.isAttacking = false;
+                isEngaging = false;
+                isEngagedClicked = false;
+            }
+        }
     }
 
-    private static void ProcessDamage(Unit unit, Unit enemyUnit)
+    private void ProcessHIT(Unit unit, Unit enemyUnit)
     {
-        Debug.Log("(B4Hit)Enemy Health: " + enemyUnit.health);
-        enemyUnit.health -= unit.equippedATK;
-        enemyUnit.health -= CalcCRIT(unit);
-        Debug.Log("(After)Enemy Health: " + enemyUnit.health);
+        if (UnityEngine.Random.value <= unit.equippedHIT / 100)
+        {
+            Debug.Log("You HIT the unit." + unit.equippedHIT / 100);
+            ProcessDamage(unit, enemyUnit);
+        }
+        else
+        {
+            Debug.Log("MISSED!!");
+        }
+    }
+
+    private void ProcessDamage(Unit unit, Unit enemyUnit)
+    {
+        if (unit != null && enemyUnit != null)
+        {
+            EngageUI engageUI = FindObjectOfType<EngageUI>();
+            Debug.Log("(B4Hit)Enemy Health: " + enemyUnit.health);
+            Debug.Log(unit.equippedWeapon.title);
+            enemyUnit.health -= unit.equippedATK;
+            enemyUnit.health -= CalcCRIT(unit);
+            Debug.Log("(After)Enemy Health: " + enemyUnit.health);
+        }
     }
 
     private static float CalcCRIT(Unit unit)
     {
-        if (UnityEngine.Random.value <= unit.baseCRIT / 100)
+        if (UnityEngine.Random.value <= unit.equippedCRIT / 100)
         {
             float CRITdamage = unit.equippedATK * UnityEngine.Random.Range(0.25f, 0.5f);
+            Debug.Log("You CRIT: " + CRITdamage);
             return CRITdamage;
         } 
         return 0;
