@@ -27,7 +27,6 @@ public class UnitDatabase : MonoBehaviour
         {
             enemies.Enqueue(enemy);
         }
-        Debug.Log(enemies.Count);
         return enemies;
     }
 
