@@ -57,6 +57,7 @@ public class PlayerSpawner : MonoBehaviour
         newUnit.position = node.position;
         SetUnitWeapons(newUnit);
         unitDatabase.AllUnits.Add(newUnit);
+        unitDatabase.EnemyUnits.Add(newUnit);
 
         GameObject instance = Instantiate(enemy, node.position, Quaternion.identity, this.transform);      
         enemyUnitView.Init(newUnit);

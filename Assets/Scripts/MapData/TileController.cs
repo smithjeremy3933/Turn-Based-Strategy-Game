@@ -31,7 +31,8 @@ public class TileController : MonoBehaviour
             {
                 playerSpawner.SpawnPlayer(graph, playerUnitViewPrefab, 4, 6, "Player 1");
                 playerSpawner.SpawnPlayer(graph, playerUnitViewPrefab, 5, 5, "Player 2");
-                playerSpawner.SpawnEnemy(graph, enemyUnitViewPrefab, 6, 5, "Enemy 1");
+                playerSpawner.SpawnEnemy(graph, enemyUnitViewPrefab, 9, 6, "Enemy 1");
+                playerSpawner.SpawnEnemy(graph, enemyUnitViewPrefab, 8, 4, "Enemy 2");
             }          
         }
     }

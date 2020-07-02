@@ -20,6 +20,17 @@ public class UnitDatabase : MonoBehaviour
     Dictionary<Node, GameObject> nodeUnitViewMap = new Dictionary<Node, GameObject>();
     Dictionary<Unit, GameObject> unitGOMap = new Dictionary<Unit, GameObject>();
 
+    public Queue<Unit> GetEnemeiesForTurn()
+    {
+        Queue<Unit> enemies = new Queue<Unit>();
+        foreach (Unit enemy in m_enemyUnits)
+        {
+            enemies.Enqueue(enemy);
+        }
+        Debug.Log(enemies.Count);
+        return enemies;
+    }
+
     public void UpdateDicts(Unit unit, Node startNode, Node goalNode)
     {
         if (!UnitNodeMap.ContainsKey(goalNode))
