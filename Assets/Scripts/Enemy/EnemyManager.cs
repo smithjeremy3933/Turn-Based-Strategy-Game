@@ -27,30 +27,15 @@ public class EnemyManager : MonoBehaviour
 
     public IEnumerator InitEnemyTurn()
     {
-        SelectionIndicator selectionIndicator = HideSelectionVisuals();
-        Debug.Log("Start of Enemy Turn.");
-        isEnemyTurn = true;
-        currentEnemies = new Queue<Unit>();
-        currentEnemies = unitDatabase.GetEnemeiesForTurn();
+        SelectionIndicator selectionIndicator = FindObjectOfType<SelectionIndicator>();
+        StartEnemyTurn(selectionIndicator);
 
         while (isEnemyTurn)
         {
             yield return StartCoroutine(ProcessEnemy(currentEnemies, pathfinder));
         }
 
-        Debug.Log("End of Enemy Turn.");
-        Cursor.visible = true;
-        selectionIndicator.ShowSelectionIndicator();
-        currentEnemies = null;
-        turnManager.currentTurn = Turn.playerTurn;
-    }
-
-    private static SelectionIndicator HideSelectionVisuals()
-    {
-        SelectionIndicator selectionIndicator = FindObjectOfType<SelectionIndicator>();
-        selectionIndicator.HideSelectionIndicator();
-        Cursor.visible = false;
-        return selectionIndicator;
+        EndEnemyTurn(selectionIndicator);
     }
 
     IEnumerator ProcessEnemy(Queue<Unit> enemies, Pathfinder pathfinder)
@@ -65,15 +50,51 @@ public class EnemyManager : MonoBehaviour
                 if (enemy != null && enemyView != null)
                 {
                     EnemyMovement enemyMovement = enemyView.GetComponent<EnemyMovement>();
-                    Unit closestPlayer = enemyMovement.FindClosestPlayer(enemy, unitDatabase, pathfinder);
-
-                    if (closestPlayer != null)
+                    if (enemyMovement != null)
                     {
-                        yield return StartCoroutine(enemyMovement.Move(closestPlayer.currentNode, enemy, enemyView, pathfinder));
+                        enemyMovement.SensePlayerUnits(enemy, unitDatabase);
+
+                        if (enemy.isSurrEnemies)
+                        {
+                            Debug.Log("Attack the player unit.");
+                            EnemyAttack enemyAttack = enemyView.GetComponent<EnemyAttack>();
+                            if (enemyAttack != null)
+                            {
+                                yield return StartCoroutine(enemyAttack.AttackPlayer(enemy));
+                            }
+                        }
+                        else
+                        {
+                            Unit closestPlayer = enemyMovement.FindClosestPlayer(enemy, unitDatabase, pathfinder);
+
+                            if (closestPlayer != null)
+                            {
+                                yield return StartCoroutine(enemyMovement.Move(closestPlayer.currentNode, enemy, enemyView, pathfinder));
+                            }
+                        }
                     }
                 }
             }
         }
         isEnemyTurn = false;
-    } 
+    }
+
+    private void StartEnemyTurn(SelectionIndicator selectionIndicator)
+    {
+        selectionIndicator.HideSelectionIndicator();
+        Cursor.visible = false;
+        Debug.Log("Start of Enemy Turn.");
+        isEnemyTurn = true;
+        currentEnemies = new Queue<Unit>();
+        currentEnemies = unitDatabase.GetEnemeiesForTurn();
+    }
+
+    private void EndEnemyTurn(SelectionIndicator selectionIndicator)
+    {
+        Debug.Log("End of Enemy Turn.");
+        Cursor.visible = true;
+        selectionIndicator.ShowSelectionIndicator();
+        currentEnemies = null;
+        turnManager.currentTurn = Turn.playerTurn;
+    }
 }

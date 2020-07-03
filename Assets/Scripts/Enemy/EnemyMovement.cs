@@ -41,10 +41,8 @@ public class EnemyMovement : MonoBehaviour
             yield return new WaitForSeconds(moveDelay);
             if (node != enemyManager.StartNode)
             {
-                Graph graph = FindObjectOfType<Graph>();
-                this.graph = graph;
-                //float distanceBetweenNodes = this.graph.GetNodeDistance(node.previous, node);
-                //unit.actionPoints -= distanceBetweenNodes;
+                float distanceBetweenNodes = graph.GetNodeDistance(node.previous, node);
+                unit.actionPoints -= distanceBetweenNodes;
             }
 
             if (!unitDatabase.UnitNodeMap.ContainsKey(node))
@@ -73,6 +71,28 @@ public class EnemyMovement : MonoBehaviour
         unit.yIndex = node.yIndex;
     }
 
+    public void SensePlayerUnits(Unit enemy, UnitDatabase unitDatabase)
+    {
+        enemy.ResetSurroundingEnemies(enemy);
+        enemy.surroundingEnemies = new List<Unit>();
+        var hitNodesNieghbors = graph.GetNeighbors(enemy.currentNode.xIndex, enemy.currentNode.yIndex);
+        foreach (Node node in hitNodesNieghbors)
+        {
+            if (unitDatabase.UnitNodeMap.ContainsKey(node))
+            {
+                if (unitDatabase.UnitNodeMap[node] != null)
+                {
+                    Unit player = unitDatabase.UnitNodeMap[node];
+                    if (player.unitType == UnitType.player)
+                    {
+                        enemy.surroundingEnemies.Add(player);
+                        enemy.isSurrEnemies = true;
+                    }
+                }
+            }
+        }
+    }
+
     public Unit FindClosestPlayer(Unit enemy, UnitDatabase unitDatabase, Pathfinder pathfinder)
     {
         if (unitDatabase != null && pathfinder != null)
@@ -82,14 +102,11 @@ public class EnemyMovement : MonoBehaviour
             foreach (Unit unit in unitDatabase.PlayerUnits)
             {
                 List<Node> potentialPath = pathfinder.GetPath(unit.currentNode, enemy);
-                Debug.Log(potentialPath.Count);
                 if (potentialPath.Count < shortestPath.Count || shortestPath.Count == 0)
                 {
                     closestUnit = unit;
-                    Debug.Log(closestUnit);
                     shortestPath = potentialPath;
                 }
-                Debug.Log(closestUnit.name);
             }
             return closestUnit;
         }

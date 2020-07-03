@@ -15,14 +15,10 @@ public class Graph : MonoBehaviour
 
     public static readonly Vector2[] allDirections =
     {
-        new Vector2(0f,1f),
-        new Vector2(1f,1f),
-        new Vector2(1f,0f),
-        new Vector2(1f,-1f),
-        new Vector2(0f,-1f),
-        new Vector2(-1f,-1f),
-        new Vector2(-1f,0f),
-        new Vector2(-1f,1f),
+        Vector2Int.up,
+        Vector2Int.right,
+        Vector2Int.down,
+        Vector2Int.left
     };
 
     public void Init(int[,] mapData)
