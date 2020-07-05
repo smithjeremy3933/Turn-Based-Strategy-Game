@@ -27,7 +27,6 @@ public class PlayerManager : MonoBehaviour
     MouseController m_mouseController;
     UnitDatabase m_unitDatabase;
     PlayerAttack m_currentPlayerAttack;
-    ActionList m_actionList;
     Ray ray;
     Color enemyMoveRangeColor = Color.red;
     List<Node> currentPath;
@@ -44,7 +43,12 @@ public class PlayerManager : MonoBehaviour
         m_graphView = FindObjectOfType<GraphView>();
         m_pathfinder = FindObjectOfType<Pathfinder>();
         m_unitDatabase = FindObjectOfType<UnitDatabase>();
-        m_actionList = FindObjectOfType<ActionList>();
+        TurnManager.OnTurnEnded += TurnManager_OnTurnEnded;
+    }
+
+    private void TurnManager_OnTurnEnded(object sender, EventArgs e)
+    {
+        DeselectUnit();
     }
 
     private void Update()
@@ -128,10 +132,10 @@ public class PlayerManager : MonoBehaviour
                             return;
                         }
 
-                        if (currentUnit.hasMoved && !isEnemySelected)
-                        {
-                            PromptUnitAction(currentUnit);
-                        }
+                        //if (currentUnit.hasMoved && !isEnemySelected)
+                        //{
+                        //    PromptUnitAction(currentUnit);
+                        //}
                     }
                     else
                     {
@@ -198,7 +202,7 @@ public class PlayerManager : MonoBehaviour
             if (unit == currentUnit)
             {
                 unit.hasMoved = true;
-                PromptUnitAction(unit);
+                //PromptUnitAction(unit);
             }
 
             ResetUnitSelection(unitDatabase);
@@ -315,10 +319,13 @@ public class PlayerManager : MonoBehaviour
 
     public void DeselectUnit(Unit unit)
     {
-        unit.isSelected = false;
-        unit.isAttacking = false;
-        unit.isPathfinding = false;
-        UnHighlightUnitMovementRange(unit);
+        if (unit != null)
+        {
+            unit.isSelected = false;
+            unit.isAttacking = false;
+            unit.isPathfinding = false;
+            UnHighlightUnitMovementRange(unit);
+        }
         isGoalSelected = false;
         isEnemySelected = false;
         isSelectingEnemy = false;
@@ -330,6 +337,5 @@ public class PlayerManager : MonoBehaviour
         goalNode = null;
         currentPath = null;
         m_pathfinder.ClearPath();
-        m_actionList.actionList.SetActive(false);
     }
 }

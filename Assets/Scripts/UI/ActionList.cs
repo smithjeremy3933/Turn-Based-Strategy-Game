@@ -10,6 +10,25 @@ public class ActionList : MonoBehaviour
     private void Start()
     {
         actionList.SetActive(false);
+        PlayerManager.OnUnitSelected += PlayerManager_OnUnitSelected;
+        TurnManager.OnTurnEnded += TurnManager_OnTurnEnded;
+    }
+
+    private void TurnManager_OnTurnEnded(object sender, System.EventArgs e)
+    {
+        HandleTurn();
+    }
+
+    private void PlayerManager_OnUnitSelected(object sender, PlayerManager.OnUnitSelectedEventArgs e)
+    {
+        if (e.currentUnit.hasMoved && e.currentUnit.unitType == UnitType.player)
+        {
+            HandleMovedUnit(e.currentUnit);
+        }
+        else
+        {
+            actionList.SetActive(false);
+        }
     }
 
     public void HandleTurn()

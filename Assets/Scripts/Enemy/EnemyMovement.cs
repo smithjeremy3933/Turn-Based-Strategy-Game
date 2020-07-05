@@ -1,9 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
+    public static event EventHandler<OnEnemyMovedEventArgs> OnEnemyMoved;
+    public class OnEnemyMovedEventArgs : EventArgs
+    {
+        public Unit currentEnemy;
+        public Node startNode;
+        public Node endNode;
+    }
+
     UnitDatabase unitDatabase;
     UIController uiController;
     List<Node> currentPath;
@@ -28,18 +37,15 @@ public class EnemyMovement : MonoBehaviour
         {
             yield return StartCoroutine(FollowPath(currentPath, unit, unitView));
         }
-        if (currentPath == null)
-        {
-            Debug.Log("null path");
-        }
     }
 
     public IEnumerator FollowPath(List<Node> path, Unit unit, GameObject unitView)
     {
+        Node startNode = path[0];
         foreach (Node node in path)
         {
             yield return new WaitForSeconds(moveDelay);
-            if (node != enemyManager.StartNode)
+            if (node != startNode)
             {
                 float distanceBetweenNodes = graph.GetNodeDistance(node.previous, node);
                 unit.actionPoints -= distanceBetweenNodes;
@@ -51,9 +57,8 @@ public class EnemyMovement : MonoBehaviour
             }
         }
 
-        unitDatabase.UpdateDicts(unit, enemyManager.StartNode, unit.currentNode);
+        OnEnemyMoved?.Invoke(this, new OnEnemyMovedEventArgs { currentEnemy = unit, startNode = startNode, endNode = unit.currentNode });
         unit.hasMoved = true;
-        enemyManager.StartNode = null;
 
         if (unit.actionPoints < 1)
         {

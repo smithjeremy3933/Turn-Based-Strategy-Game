@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class WaitButton : MonoBehaviour
 {
+
     public void HandleWait()
     {
         PlayerManager playerManager = FindObjectOfType<PlayerManager>();
@@ -19,6 +21,8 @@ public class WaitButton : MonoBehaviour
 
     private void SetUnitToWait(Unit unit)
     {
+        ActionList actionList = FindObjectOfType<ActionList>();
+        actionList.actionList.SetActive(false);
         unit.isWaiting = true;
         unit.hasMoved = true;
     }

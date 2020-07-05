@@ -29,6 +29,12 @@ public class UnitDatabase : MonoBehaviour
     private void Start()
     {
         PlayerMovement.OnUnitMoved += PlayerMovement_OnUnitMoved;
+        EnemyMovement.OnEnemyMoved += EnemyMovement_OnEnemyMoved;
+    }
+
+    private void EnemyMovement_OnEnemyMoved(object sender, EnemyMovement.OnEnemyMovedEventArgs e)
+    {
+        UpdateDicts(e.currentEnemy, e.startNode, e.endNode);
     }
 
     private void PlayerMovement_OnUnitMoved(object sender, PlayerMovement.OnUnitMovedEventArgs e)

@@ -10,7 +10,6 @@ public class EnemyManager : MonoBehaviour
     Pathfinder pathfinder;
     UnitDatabase unitDatabase;
     Graph graph;
-    UIController uiController;
     Node startNode;
     Queue<Unit> currentEnemies;
     bool isEnemyTurn = false;
@@ -18,10 +17,14 @@ public class EnemyManager : MonoBehaviour
 
     private void Start()
     {
-        turnManager = FindObjectOfType<TurnManager>();
+        TurnManager.OnTurnEnded += TurnManager_OnTurnEnded;
         unitDatabase = FindObjectOfType<UnitDatabase>();
-        uiController = FindObjectOfType<UIController>();
         pathfinder = FindObjectOfType<Pathfinder>();
+    }
+
+    private void TurnManager_OnTurnEnded(object sender, System.EventArgs e)
+    {
+        StartCoroutine(InitEnemyTurn());
     }
 
     public IEnumerator InitEnemyTurn()
@@ -52,6 +55,7 @@ public class EnemyManager : MonoBehaviour
                     if (enemyMovement != null)
                     {
                         enemyMovement.SensePlayerUnits(enemy, unitDatabase);
+                        Unit closestPlayer = enemyMovement.FindClosestPlayer(enemy, unitDatabase, pathfinder);
 
                         if (enemy.isSurrEnemies)
                         {
@@ -64,8 +68,6 @@ public class EnemyManager : MonoBehaviour
                         }
                         else
                         {
-                            Unit closestPlayer = enemyMovement.FindClosestPlayer(enemy, unitDatabase, pathfinder);
-
                             if (closestPlayer != null)
                             {
                                 yield return StartCoroutine(enemyMovement.Move(closestPlayer.currentNode, enemy, enemyView, pathfinder));
@@ -94,6 +96,5 @@ public class EnemyManager : MonoBehaviour
         Cursor.visible = true;
         selectionIndicator.ShowSelectionIndicator();
         currentEnemies = null;
-        turnManager.currentTurn = Turn.playerTurn;
     }
 }
