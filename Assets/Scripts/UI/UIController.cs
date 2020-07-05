@@ -10,6 +10,23 @@ public class UIController : MonoBehaviour
     [SerializeField] public Text unitDamage;
     [SerializeField] public Text unitActionPoints;
 
+    private void Start()
+    {
+        PlayerMovement.OnUnitMoved += PlayerMovement_OnUnitMoved;
+        PlayerManager.OnUnitSelected += PlayerManager_OnUnitSelected;
+    }
+
+    private void PlayerManager_OnUnitSelected(object sender, PlayerManager.OnUnitSelectedEventArgs e)
+    {
+        UpdateUnitSelectText(e.currentUnit);
+    }
+
+    private void PlayerMovement_OnUnitMoved(object sender, PlayerMovement.OnUnitMovedEventArgs e)
+    {
+        Unit unitMoved = e.currentUnit;
+        UpdateUnitSelectText(unitMoved);
+    }
+
     public void UpdateUnitSelectText(Unit unit)
     {
         unitName.text = "NAME: " + unit.name;

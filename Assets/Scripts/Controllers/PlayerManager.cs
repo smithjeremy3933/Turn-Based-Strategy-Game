@@ -12,9 +12,14 @@ public class PlayerManager : MonoBehaviour
     public Node goalNode;
     public Color movementRangeColor = Color.cyan;
     public bool isGoalSelected;
-    public List<Node> CurrentPath { get => currentPath; set => currentPath = value; }
     public PlayerAttack CurrentPlayerAttack { get => m_currentPlayerAttack; set => m_currentPlayerAttack = value; }
     public bool IsSelectingEnemy { get => isSelectingEnemy; set => isSelectingEnemy = value; }
+    public static event EventHandler<OnUnitSelectedEventArgs> OnUnitSelected;
+    public class OnUnitSelectedEventArgs : EventArgs
+    {
+        public Unit currentUnit;
+        public GameObject currentUnitView;
+    }
 
     Graph m_graph;
     GraphView m_graphView;
@@ -22,12 +27,10 @@ public class PlayerManager : MonoBehaviour
     MouseController m_mouseController;
     UnitDatabase m_unitDatabase;
     PlayerAttack m_currentPlayerAttack;
-    PlayerMovement m_playerMovement;
     ActionList m_actionList;
     Ray ray;
     Color enemyMoveRangeColor = Color.red;
     List<Node> currentPath;
-    UIController uiController;
     float maxDistance = 100f;
     bool isEnemySelected = false;
     bool isSelectingEnemy = false;
@@ -42,7 +45,6 @@ public class PlayerManager : MonoBehaviour
         m_pathfinder = FindObjectOfType<Pathfinder>();
         m_unitDatabase = FindObjectOfType<UnitDatabase>();
         m_actionList = FindObjectOfType<ActionList>();
-        uiController = FindObjectOfType<UIController>();
     }
 
     private void Update()
@@ -106,6 +108,7 @@ public class PlayerManager : MonoBehaviour
                 {
                     currentUnit = GetUnit(m_unitDatabase, hitNode);
                     currentUnitView = m_mouseController.hoveredGameobject;
+                    OnUnitSelected?.Invoke(this, new OnUnitSelectedEventArgs { currentUnit = currentUnit, currentUnitView = currentUnitView });
                     if (!currentUnit.isWaiting)
                     {
                         if (currentUnit.unitType == UnitType.enemy)
@@ -122,7 +125,6 @@ public class PlayerManager : MonoBehaviour
                         {
                             HighlightUnitMovementRange(currentUnit);
                             currentUnit.isPathfinding = true;
-                            uiController.UpdateUnitSelectText(currentUnit);
                             return;
                         }
 
@@ -130,7 +132,6 @@ public class PlayerManager : MonoBehaviour
                         {
                             PromptUnitAction(currentUnit);
                         }
-                        uiController.UpdateUnitSelectText(currentUnit);
                     }
                     else
                     {

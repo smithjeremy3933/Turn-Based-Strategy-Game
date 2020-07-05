@@ -9,12 +9,14 @@ public class MouseController : MonoBehaviour
     public LineRenderer lineRenderer;
     public Color validLineColor = Color.cyan;
     public Color InvalidLineColor = Color.red;
+
     Node m_hoveredNode;
     UnitDatabase m_unitDatabase;
     Graph m_graph;
     Pathfinder m_pathfinder;
-    PlayerManager m_playerManager;
     float maxDist = 100f;
+    Unit currentSelectedUnit;
+    GameObject currentUnitView;
 
     public Node HoveredNode { get => m_hoveredNode; }
 
@@ -23,9 +25,14 @@ public class MouseController : MonoBehaviour
         m_unitDatabase = FindObjectOfType<UnitDatabase>();
         m_graph = FindObjectOfType<Graph>();
         m_pathfinder = FindObjectOfType<Pathfinder>();
-        m_playerManager = FindObjectOfType<PlayerManager>();
-        lineRenderer.enabled = false;
-        lineRenderer.material.color = validLineColor;
+        InitLineRenderer();
+        PlayerManager.OnUnitSelected += PlayerManager_OnUnitSelected;
+    }
+
+    private void PlayerManager_OnUnitSelected(object sender, PlayerManager.OnUnitSelectedEventArgs e)
+    {
+        currentSelectedUnit = e.currentUnit;
+        currentUnitView = e.currentUnitView;
     }
 
     void Update()
@@ -51,14 +58,13 @@ public class MouseController : MonoBehaviour
                 return;
             }
             m_hoveredNode = hitNode;
-            if (hitNode != null && m_unitDatabase.NodeUnitViewMap[hitNode] != null)
-            {
-                GameObject hitUnit = m_unitDatabase.NodeUnitViewMap[hitNode];
+            GameObject hitUnit = m_unitDatabase.NodeUnitViewMap[hitNode];
+            if (hitNode != null && hitUnit != null)
+            {               
                 if (hitUnit != null)
                 {
                     SelectObject(hitUnit);
                 }
-
             }
         }
         else
@@ -81,15 +87,14 @@ public class MouseController : MonoBehaviour
             {
                 return;
             }
-            if (hitNode != null && m_playerManager.currentUnit != null)
+            if (hitNode != null && currentSelectedUnit != null)
             {
-                if (m_playerManager.currentUnit.isPathfinding)
+                if (currentSelectedUnit.isPathfinding)
                 {
-                    Unit currentUnit = m_playerManager.currentUnit;
-                    List<Node> currentPath = m_pathfinder.GetPath(hitNode, currentUnit);
-                    if (currentUnit != null && currentPath != null)
+                    List<Node> currentPath = m_pathfinder.GetPath(hitNode, currentSelectedUnit);
+                    if (currentSelectedUnit != null && currentPath != null)
                     {
-                        DrawPath(currentPath.ToArray<Node>(), currentUnit);
+                        DrawPath(currentPath.ToArray<Node>(), currentSelectedUnit);
                     }
                 }
             }
@@ -145,5 +150,12 @@ public class MouseController : MonoBehaviour
             return;
 
         hoveredGameobject = null;
+    }
+
+
+    private void InitLineRenderer()
+    {
+        lineRenderer.enabled = false;
+        lineRenderer.material.color = validLineColor;
     }
 }

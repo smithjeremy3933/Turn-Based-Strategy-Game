@@ -26,6 +26,20 @@ public class UnitDatabase : MonoBehaviour
         playerSpawner.OnUnitSpawned += PlayerSpawner_OnUnitSpawned;
     }
 
+    private void Start()
+    {
+        PlayerMovement.OnUnitMoved += PlayerMovement_OnUnitMoved;
+    }
+
+    private void PlayerMovement_OnUnitMoved(object sender, PlayerMovement.OnUnitMovedEventArgs e)
+    {
+        Debug.Log("Player unit just moved");
+        Unit movedUnit = e.currentUnit;
+        Node startNode = e.startNode;
+        Node endNode = e.endNode;
+        UpdateDicts(movedUnit, startNode, endNode);
+    }
+
     private void PlayerSpawner_OnUnitSpawned(object sender, PlayerSpawner.OnUnitSpawnedEventArgs e)
     {
         Debug.Log("Unit was spawned on the map " + e.newUnit.name);
