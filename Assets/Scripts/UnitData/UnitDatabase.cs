@@ -20,6 +20,46 @@ public class UnitDatabase : MonoBehaviour
     Dictionary<Node, GameObject> nodeUnitViewMap = new Dictionary<Node, GameObject>();
     Dictionary<Unit, GameObject> unitGOMap = new Dictionary<Unit, GameObject>();
 
+    private void Awake()
+    {
+        PlayerSpawner playerSpawner = FindObjectOfType<PlayerSpawner>();
+        playerSpawner.OnUnitSpawned += PlayerSpawner_OnUnitSpawned;
+    }
+
+    private void PlayerSpawner_OnUnitSpawned(object sender, PlayerSpawner.OnUnitSpawnedEventArgs e)
+    {
+        Debug.Log("Unit was spawned on the map " + e.newUnit.name);
+        Unit newUnit = e.newUnit;
+        Node node = e.node;
+        GameObject instance = e.instance;
+        newUnit.currentNode = node;
+        newUnit.position = node.position;
+        newUnit.gameObject = instance;
+
+        if (newUnit.unitType == UnitType.player)
+        {
+            PlayerUnits.Add(newUnit);
+        }
+        else
+        {
+            EnemyUnits.Add(newUnit);
+        }
+
+        AllUnits.Add(newUnit);
+        NodeUnitViewMap[node] = newUnit.gameObject;
+        UnitGOMap[newUnit] = instance;
+
+        if (UnitNodeMap == null)
+        {
+            UnitNodeMap = new Dictionary<Node, Unit>();
+            UnitNodeMap[node] = newUnit;
+        }
+        else
+        {
+            UnitNodeMap[node] = newUnit;
+        }
+    }
+
     public Queue<Unit> GetEnemeiesForTurn()
     {
         Queue<Unit> enemies = new Queue<Unit>();

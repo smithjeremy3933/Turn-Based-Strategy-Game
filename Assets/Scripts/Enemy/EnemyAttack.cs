@@ -9,9 +9,39 @@ public class EnemyAttack : MonoBehaviour
         Debug.Log("enemy attacked unit");
         if (enemy != null && enemy.surroundingEnemies != null)
         {
-            Unit playerUnitToAttacK = enemy.surroundingEnemies[0];
-            playerUnitToAttacK.health -= enemy.baseAttackDamage;
+            Unit playerLowestHP = FindPlayerLowestHP(enemy);
+            ProcessAttack(enemy, playerLowestHP);
         }
         yield return new WaitForSeconds(3f);
+    }
+
+    private static void ProcessAttack(Unit enemy, Unit playerLowestHP)
+    {
+        Item bestWeapon = enemy.equippedWeapon;
+        playerLowestHP.health -= enemy.equippedATK;
+        Debug.Log(playerLowestHP.health);
+    }
+
+    private static Unit FindPlayerLowestHP(Unit enemy)
+    {
+        if (enemy != null)
+        {
+            Unit playerLowestHP = null;
+            float lowestHP = 0;
+            foreach (Unit player in enemy.surroundingEnemies)
+            {
+                if (player.health < lowestHP || lowestHP == 0)
+                {
+                    playerLowestHP = player;
+                    lowestHP = player.health;
+                }
+            }
+
+            return playerLowestHP;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

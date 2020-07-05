@@ -10,11 +10,5 @@ public class Inventory : MonoBehaviour
     {
         Item item = itemDatabase.GetItem(ID);
         unit.unitInventory.Add(item);
-        SetEquippedStats(unit);
-    }
-
-    void SetEquippedStats(Unit unit)
-    {
-        unit.equippedATK = unit.baseAttackDamage + unit.unitInventory[0].stats["ATK"];
     }
 }

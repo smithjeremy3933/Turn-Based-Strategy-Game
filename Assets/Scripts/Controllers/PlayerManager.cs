@@ -17,6 +17,7 @@ public class PlayerManager : MonoBehaviour
     public bool IsSelectingEnemy { get => isSelectingEnemy; set => isSelectingEnemy = value; }
 
     Graph m_graph;
+    GraphView m_graphView;
     Pathfinder m_pathfinder;
     MouseController m_mouseController;
     UnitDatabase m_unitDatabase;
@@ -24,16 +25,20 @@ public class PlayerManager : MonoBehaviour
     PlayerMovement m_playerMovement;
     ActionList m_actionList;
     Ray ray;
+    Color enemyMoveRangeColor = Color.red;
     List<Node> currentPath;
     UIController uiController;
     float maxDistance = 100f;
     bool isEnemySelected = false;
     bool isSelectingEnemy = false;
+    // Need to find out why exactly I need this offset!
+    float actionPointoffset = 1f;
 
     private void Start()
     {
         m_mouseController = FindObjectOfType<MouseController>();
         m_graph = FindObjectOfType<Graph>();
+        m_graphView = FindObjectOfType<GraphView>();
         m_pathfinder = FindObjectOfType<Pathfinder>();
         m_unitDatabase = FindObjectOfType<UnitDatabase>();
         m_actionList = FindObjectOfType<ActionList>();
@@ -106,6 +111,7 @@ public class PlayerManager : MonoBehaviour
                         if (currentUnit.unitType == UnitType.enemy)
                         {
                             isEnemySelected = true;
+                            HighlightUnitMovementRange(currentUnit, enemyMoveRangeColor);
                         }
                         else if (currentUnit.unitType == UnitType.player)
                         {
@@ -145,18 +151,21 @@ public class PlayerManager : MonoBehaviour
 
                 if (hitNode != null && startNode != null && !m_unitDatabase.UnitNodeMap.ContainsKey(hitNode) && !currentUnit.isAttacking)
                 {
-                    float distanceBetweenNodes = m_graph.GetNodeDistance(startNode, hitNode);
-                    if (currentUnit.actionPoints < distanceBetweenNodes || currentUnit.hasMoved)
+                    currentPath = m_pathfinder.GetPath(hitNode, currentUnit);
+                    if (currentUnit.actionPoints + actionPointoffset < currentPath.Count || currentUnit.hasMoved)
                     {
                         Debug.Log("Not enough action points or unit has already moved!");
+                        currentPath = null;
                         return;
                     }
+
                     // A goal node was hit. Need to validate, move, and update data.
                     isGoalSelected = true;
                     goalNode = hitNode;
                     if (currentUnitView != null)
                     {
                         PlayerMovement playerMovement = currentUnitView.GetComponent<PlayerMovement>();
+                        UnHighlightUnitMovementRange(currentUnit);
                         playerMovement.Move(hitNode, currentUnit, currentUnitView, m_pathfinder);
                     }
                 }
@@ -213,7 +222,89 @@ public class PlayerManager : MonoBehaviour
 
     private void HighlightUnitMovementRange(Unit unit)
     {
-        Debug.Log("Highlight unit's movement range");
+        for (int x = unit.xIndex - (int)unit.actionPoints; x <= unit.xIndex + (int)unit.actionPoints; x++)
+        {
+            for (int y = unit.yIndex - (int)unit.actionPoints; y <= unit.yIndex + (int)unit.actionPoints; y++)
+            {
+                if (m_graph.IsWithinBounds(x, y))
+                {
+                    if (m_graph.GetNodeAt(x, y).nodeType == NodeType.Open)
+                    {
+                        Node node = m_graph.GetNodeAt(x, y);
+                        if (!m_unitDatabase.UnitNodeMap.ContainsKey(node))
+                        {
+                            if (m_pathfinder.GetPath(node, unit).Count <= unit.actionPoints + actionPointoffset)
+                            {
+                                NodeView nodeView = m_graphView.nodeViews[node.xIndex, node.yIndex];
+                                nodeView.ColorNode(movementRangeColor);
+                            }
+                            else
+                            {
+                                // Nothing
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void HighlightUnitMovementRange(Unit unit, Color color)
+    {
+        for (int x = unit.xIndex - (int)unit.actionPoints; x <= unit.xIndex + (int)unit.actionPoints; x++)
+        {
+            for (int y = unit.yIndex - (int)unit.actionPoints; y <= unit.yIndex + (int)unit.actionPoints; y++)
+            {
+                if (m_graph.IsWithinBounds(x, y))
+                {
+                    if (m_graph.GetNodeAt(x, y).nodeType == NodeType.Open)
+                    {
+                        Node node = m_graph.GetNodeAt(x, y);
+                        if (!m_unitDatabase.UnitNodeMap.ContainsKey(node))
+                        {
+                            if (m_pathfinder.GetPath(node, unit).Count <= unit.actionPoints + actionPointoffset)
+                            {
+                                NodeView nodeView = m_graphView.nodeViews[node.xIndex, node.yIndex];
+                                nodeView.ColorNode(color);
+                            }
+                            else
+                            {
+                                // Nothing
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void UnHighlightUnitMovementRange(Unit unit)
+    {
+        for (int x = unit.xIndex - (int)unit.actionPoints; x <= unit.xIndex + (int)unit.actionPoints; x++)
+        {
+            for (int y = unit.yIndex - (int)unit.actionPoints; y <= unit.yIndex + (int)unit.actionPoints; y++)
+            {
+                if (m_graph.IsWithinBounds(x, y))
+                {
+                    if (m_graph.GetNodeAt(x, y).nodeType == NodeType.Open)
+                    {
+                        Node node = m_graph.GetNodeAt(x, y);
+                        if (!m_unitDatabase.UnitNodeMap.ContainsKey(node))
+                        {
+                            if (m_pathfinder.GetPath(node, unit).Count <= unit.actionPoints + actionPointoffset)
+                            {
+                                NodeView nodeView = m_graphView.nodeViews[node.xIndex, node.yIndex];
+                                nodeView.ColorNode(m_graphView.baseColor);
+                            }
+                            else
+                            {
+                                // Nothing
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void DeselectUnit()
@@ -226,6 +317,7 @@ public class PlayerManager : MonoBehaviour
         unit.isSelected = false;
         unit.isAttacking = false;
         unit.isPathfinding = false;
+        UnHighlightUnitMovementRange(unit);
         isGoalSelected = false;
         isEnemySelected = false;
         isSelectingEnemy = false;

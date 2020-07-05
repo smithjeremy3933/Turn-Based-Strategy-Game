@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
+    public Node StartNode { get => startNode; set => startNode = value; }
+
     TurnManager turnManager;
     Pathfinder pathfinder;
     UnitDatabase unitDatabase;
@@ -12,10 +14,7 @@ public class EnemyManager : MonoBehaviour
     Node startNode;
     Queue<Unit> currentEnemies;
     bool isEnemyTurn = false;
-
     float moveDelay = 0.2f;
-
-    public Node StartNode { get => startNode; set => startNode = value; }
 
     private void Start()
     {

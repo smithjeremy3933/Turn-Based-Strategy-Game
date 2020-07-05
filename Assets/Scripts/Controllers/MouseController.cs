@@ -106,9 +106,8 @@ public class MouseController : MonoBehaviour
             return;
         }
         lineRenderer.enabled = true;
-        
-        float distanceBetweenNodes = m_graph.GetNodeDistance(path[0], path[path.Length - 1]);
-        if (distanceBetweenNodes > unit.actionPoints)
+
+        if (path.Length -1 > unit.actionPoints)
         {
             lineRenderer.material.color = InvalidLineColor;
         } else

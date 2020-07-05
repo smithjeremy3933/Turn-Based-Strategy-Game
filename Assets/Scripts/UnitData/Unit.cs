@@ -66,11 +66,21 @@ public class Unit
 
     public void ProcessTurn()
     {
-        actionPoints = 7f;
+        ResetActionPoints(this.actionPoints);
         hasMoved = false;
         isWaiting = false;
         isAttacking = false;
         isPathfinding = false;
+    }
+
+    public void ResetActionPoints()
+    {
+        ResetActionPoints(actionPoints);
+    }
+
+    private void ResetActionPoints(float AP)
+    {
+        actionPoints = AP;
     }
 
     public void GetUnitNeighbors(Node hitNode, Unit unit, Graph graph, UnitDatabase unitDatabase)
