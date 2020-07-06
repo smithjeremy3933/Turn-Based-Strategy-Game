@@ -27,6 +27,7 @@ public class Unit
     public float baseCRIT = 5f;
     public float equippedCRIT;
 
+    public float maxActionPoints = 7f;
     public float actionPoints = 7f;
     public float calcAPC;
 
@@ -75,7 +76,7 @@ public class Unit
 
     public void ResetActionPoints()
     {
-        ResetActionPoints(actionPoints);
+        ResetActionPoints(maxActionPoints);
     }
 
     private void ResetActionPoints(float AP)

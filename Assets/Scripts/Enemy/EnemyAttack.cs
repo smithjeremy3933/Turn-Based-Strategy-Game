@@ -6,6 +6,13 @@ public class EnemyAttack : MonoBehaviour
 {
     public IEnumerator AttackPlayer(Unit enemy)
     {
+        if (!CanAttack(enemy))
+        {
+            Debug.Log("Enemy is waiting because they do not have enough AP to attack");
+            enemy.isWaiting = true;
+            yield break;
+        }
+
         Debug.Log("enemy attacked unit");
         if (enemy != null && enemy.surroundingEnemies != null)
         {
@@ -15,11 +22,12 @@ public class EnemyAttack : MonoBehaviour
         yield return new WaitForSeconds(3f);
     }
 
-    private static void ProcessAttack(Unit enemy, Unit playerLowestHP)
+    private void ProcessAttack(Unit enemy, Unit playerLowestHP)
     {
-        Item bestWeapon = enemy.equippedWeapon;
+        GetBestWeapon(enemy);
         playerLowestHP.health -= enemy.equippedATK;
         Debug.Log(playerLowestHP.health);
+        playerLowestHP.gameObject.GetComponent<PlayerUnitView>().UnitDeath(playerLowestHP);
     }
 
     private static Unit FindPlayerLowestHP(Unit enemy)
@@ -43,5 +51,36 @@ public class EnemyAttack : MonoBehaviour
         {
             return null;
         }
+    }
+
+    bool CanAttack(Unit unit)
+    {
+        Item potentialWeapon = null;
+        foreach (Item weapon in unit.unitInventory)
+        {
+            if (unit.actionPoints >= weapon.stats["APC"])
+            {
+                potentialWeapon = weapon;
+            }
+        }
+        Debug.Log(unit.actionPoints);
+        if (potentialWeapon == null)
+            return false;
+        else
+            return true;
+    }
+
+    void GetBestWeapon(Unit unit)
+    {
+        Item bestWeapon = unit.equippedWeapon;
+        foreach (Item weapon in unit.unitInventory)
+        {
+            if (unit.actionPoints >= weapon.stats["APC"] && bestWeapon.stats["ATK"] < weapon.stats["ATK"])
+            {
+                bestWeapon = weapon;
+                Debug.Log(bestWeapon.title);
+            }
+        }
+        unit.GetWeaponStats(unit, bestWeapon);
     }
 }

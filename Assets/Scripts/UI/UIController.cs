@@ -10,10 +10,19 @@ public class UIController : MonoBehaviour
     [SerializeField] public Text unitDamage;
     [SerializeField] public Text unitActionPoints;
 
+    EnemyManager enemyManager;
+
     private void Start()
     {
+        enemyManager = FindObjectOfType<EnemyManager>();
         PlayerMovement.OnUnitMoved += PlayerMovement_OnUnitMoved;
         PlayerManager.OnUnitSelected += PlayerManager_OnUnitSelected;
+        enemyManager.OnEnemyTurnEnded += EnemyManager_OnEnemyTurnEnded;
+    }
+
+    private void EnemyManager_OnEnemyTurnEnded(object sender, EnemyManager.OnEnemyTurnEndedEventArgs e)
+    {
+        UpdateUnitSelectText(e.enemy);
     }
 
     private void PlayerManager_OnUnitSelected(object sender, PlayerManager.OnUnitSelectedEventArgs e)
@@ -23,8 +32,7 @@ public class UIController : MonoBehaviour
 
     private void PlayerMovement_OnUnitMoved(object sender, PlayerMovement.OnUnitMovedEventArgs e)
     {
-        Unit unitMoved = e.currentUnit;
-        UpdateUnitSelectText(unitMoved);
+        UpdateUnitSelectText(e.currentUnit);
     }
 
     public void UpdateUnitSelectText(Unit unit)

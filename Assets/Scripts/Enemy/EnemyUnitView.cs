@@ -12,4 +12,9 @@ public class EnemyUnitView : MonoBehaviour
         gameObject.transform.position = unit.position;
         m_startNode = unit.currentNode;
     }
+
+    public void UnitDeath()
+    {
+
+    }
 }

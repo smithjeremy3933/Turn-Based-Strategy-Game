@@ -1,10 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
     public Node StartNode { get => startNode; set => startNode = value; }
+    public event EventHandler<OnEnemyTurnEndedEventArgs> OnEnemyTurnEnded;
+    public class OnEnemyTurnEndedEventArgs : EventArgs
+    {
+        public Unit enemy;
+    }
 
     TurnManager turnManager;
     Pathfinder pathfinder;
@@ -94,6 +100,12 @@ public class EnemyManager : MonoBehaviour
     {
         Debug.Log("End of Enemy Turn.");
         Cursor.visible = true;
+        foreach (Unit enemy in unitDatabase.EnemyUnits)
+        {
+            enemy.ResetActionPoints();
+        }
+        Unit enemyUnit = unitDatabase.EnemyUnits[0];
+        OnEnemyTurnEnded?.Invoke(this, new OnEnemyTurnEndedEventArgs { enemy = enemyUnit });
         selectionIndicator.ShowSelectionIndicator();
         currentEnemies = null;
     }

@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class UnitDatabase : MonoBehaviour
 {
-    public List<Unit> AllUnits { get => m_allUnits; set => m_allUnits = value; }
-    public List<Unit> PlayerUnits { get => m_playerUnits; set => m_playerUnits = value; }
-    public List<Unit> EnemyUnits { get => m_enemyUnits; set => m_enemyUnits = value; }
-    public List<Unit> KilledPlayerUnits { get => m_killedPlayerUnits; set => m_killedPlayerUnits = value; }
-    public Dictionary<Node, Unit> UnitNodeMap { get => unitNodeMap; set => unitNodeMap = value; }
-    public Dictionary<Node, GameObject> NodeUnitViewMap { get => nodeUnitViewMap; set => nodeUnitViewMap = value; }
-    public Dictionary<Unit, GameObject> UnitGOMap { get => unitGOMap; set => unitGOMap = value; }
+    public List<Unit> AllUnits { get => m_allUnits; }
+    public List<Unit> PlayerUnits { get => m_playerUnits; }
+    public List<Unit> EnemyUnits { get => m_enemyUnits; }
+    public List<Unit> KilledPlayerUnits { get => m_killedPlayerUnits; }
+    public Dictionary<Node, Unit> UnitNodeMap { get => unitNodeMap; }
+    public Dictionary<Node, GameObject> NodeUnitViewMap { get => nodeUnitViewMap; }
+    public Dictionary<Unit, GameObject> UnitGOMap { get => unitGOMap; }
 
     List<Unit> m_allUnits = new List<Unit>();
     List<Unit> m_playerUnits = new List<Unit>();
@@ -30,6 +30,18 @@ public class UnitDatabase : MonoBehaviour
     {
         PlayerMovement.OnUnitMoved += PlayerMovement_OnUnitMoved;
         EnemyMovement.OnEnemyMoved += EnemyMovement_OnEnemyMoved;
+        PlayerUnitView.OnUnitDeath += PlayerUnitView_OnUnitDeath;
+    }
+
+    private void PlayerUnitView_OnUnitDeath(object sender, PlayerUnitView.OnUnitDeathEventArgs e)
+    {
+        KilledPlayerUnits.Add(e.deadUnit);
+        AllUnits.Remove(e.deadUnit);
+        PlayerUnits.Remove(e.deadUnit);
+        UnitNodeMap.Remove(e.deadUnit.currentNode);
+        NodeUnitViewMap.Remove(e.deadUnit.currentNode);
+        UnitGOMap.Remove(e.deadUnit);
+        Debug.Log("Player unit deleted from active list of unit");
     }
 
     private void EnemyMovement_OnEnemyMoved(object sender, EnemyMovement.OnEnemyMovedEventArgs e)
@@ -48,7 +60,6 @@ public class UnitDatabase : MonoBehaviour
 
     private void PlayerSpawner_OnUnitSpawned(object sender, PlayerSpawner.OnUnitSpawnedEventArgs e)
     {
-        Debug.Log("Unit was spawned on the map " + e.newUnit.name);
         Unit newUnit = e.newUnit;
         Node node = e.node;
         GameObject instance = e.instance;
@@ -68,16 +79,7 @@ public class UnitDatabase : MonoBehaviour
         AllUnits.Add(newUnit);
         NodeUnitViewMap[node] = newUnit.gameObject;
         UnitGOMap[newUnit] = instance;
-
-        if (UnitNodeMap == null)
-        {
-            UnitNodeMap = new Dictionary<Node, Unit>();
-            UnitNodeMap[node] = newUnit;
-        }
-        else
-        {
-            UnitNodeMap[node] = newUnit;
-        }
+        UnitNodeMap[node] = newUnit;       
     }
 
     public Queue<Unit> GetEnemeiesForTurn()

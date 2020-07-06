@@ -17,13 +17,11 @@ public class EnemyMovement : MonoBehaviour
     UIController uiController;
     List<Node> currentPath;
     Graph graph;
-    EnemyManager enemyManager;
     bool isUnitMoving;
     float moveDelay = 0.2f;
 
     private void Start()
     {
-        enemyManager = FindObjectOfType<EnemyManager>();
         unitDatabase = FindObjectOfType<UnitDatabase>();
         uiController = FindObjectOfType<UIController>();
         graph = FindObjectOfType<Graph>();
@@ -31,7 +29,6 @@ public class EnemyMovement : MonoBehaviour
 
     public IEnumerator Move(Node hitNode, Unit unit, GameObject unitView, Pathfinder pathfinder)
     {
-        Node startNode = enemyManager.StartNode;
         List<Node> currentPath = pathfinder.GetPath(hitNode, unit);
         if (currentPath != null && hitNode != null)
         {
@@ -44,25 +41,30 @@ public class EnemyMovement : MonoBehaviour
         Node startNode = path[0];
         foreach (Node node in path)
         {
-            yield return new WaitForSeconds(moveDelay);
-            if (node != startNode)
+            if (unit.actionPoints != 0)
             {
-                float distanceBetweenNodes = graph.GetNodeDistance(node.previous, node);
-                unit.actionPoints -= distanceBetweenNodes;
-            }
-
-            if (!unitDatabase.UnitNodeMap.ContainsKey(node))
-            {
-                UpdateUnitPosData(uiController, unit, unitView, node);
+                yield return new WaitForSeconds(moveDelay);
+                if (!unitDatabase.UnitNodeMap.ContainsKey(node))
+                {
+                    float distanceBetweenNodes = graph.GetNodeDistance(node.previous, node);
+                    unit.actionPoints -= distanceBetweenNodes;
+                    UpdateUnitPosData(uiController, unit, unitView, node);
+                }
             }
         }
 
         OnEnemyMoved?.Invoke(this, new OnEnemyMovedEventArgs { currentEnemy = unit, startNode = startNode, endNode = unit.currentNode });
         unit.hasMoved = true;
+        SensePlayerUnits(unit, unitDatabase);
 
-        if (unit.actionPoints < 1)
+        if (unit.surroundingEnemies != null)
+        {
+            yield return StartCoroutine(gameObject.GetComponent<EnemyAttack>().AttackPlayer(unit));
+        }
+        else
         {
             unit.isWaiting = true;
+            unit.ResetActionPoints();
         }
     }
 
