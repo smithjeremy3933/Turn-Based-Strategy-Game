@@ -30,10 +30,10 @@ public class UnitDatabase : MonoBehaviour
     {
         PlayerMovement.OnUnitMoved += PlayerMovement_OnUnitMoved;
         EnemyMovement.OnEnemyMoved += EnemyMovement_OnEnemyMoved;
-        PlayerUnitView.OnUnitDeath += PlayerUnitView_OnUnitDeath;
+        UnitView.OnUnitDeath += PlayerUnitView_OnUnitDeath;
     }
 
-    private void PlayerUnitView_OnUnitDeath(object sender, PlayerUnitView.OnUnitDeathEventArgs e)
+    private void PlayerUnitView_OnUnitDeath(object sender, UnitView.OnUnitDeathEventArgs e)
     {
         KilledPlayerUnits.Add(e.deadUnit);
         AllUnits.Remove(e.deadUnit);

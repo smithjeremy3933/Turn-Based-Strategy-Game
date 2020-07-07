@@ -67,7 +67,7 @@ public class Unit
 
     public void ProcessTurn()
     {
-        ResetActionPoints(this.actionPoints);
+        ResetActionPoints();
         hasMoved = false;
         isWaiting = false;
         isAttacking = false;

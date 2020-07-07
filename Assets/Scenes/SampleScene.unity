@@ -4769,7 +4769,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2da7ba44b4cde944908ad4668247b59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitDatabase: {fileID: 38026101}
   inventory: {fileID: 924112670}
   graph: {fileID: 1195788894}
   playerUnitView: {fileID: 7608174489245071071, guid: a27a90e445144964eb7016336321e8da,

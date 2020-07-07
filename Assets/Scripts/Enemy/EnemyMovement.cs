@@ -63,7 +63,6 @@ public class EnemyMovement : MonoBehaviour
         }
         else
         {
-            unit.isWaiting = true;
             unit.ResetActionPoints();
         }
     }

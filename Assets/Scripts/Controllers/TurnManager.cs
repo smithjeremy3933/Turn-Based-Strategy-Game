@@ -13,7 +13,6 @@ public class TurnManager : MonoBehaviour
     public Turn currentTurn = Turn.playerTurn;
     UnitDatabase m_unitDatabase;
     int m_turnNumber = 1;
-    List<Unit> m_playerUnits;
 
     public void EndTurn()
     {
@@ -31,15 +30,15 @@ public class TurnManager : MonoBehaviour
     private void ProcessUnitStats()
     {
         m_unitDatabase = FindObjectOfType<UnitDatabase>();
-        List<Unit> playerUnits = m_unitDatabase.GetComponent<UnitDatabase>().PlayerUnits;
-        m_playerUnits = playerUnits;
+        List<Unit> playerUnits = m_unitDatabase.PlayerUnits;
         ResetStats(playerUnits);
     }
 
     public void ResetStats(List<Unit> units)
     {       
         foreach (Unit unit in units)
-        {        
+        {
+            Debug.Log(unit.name);
             unit.ProcessTurn();
         }
     }

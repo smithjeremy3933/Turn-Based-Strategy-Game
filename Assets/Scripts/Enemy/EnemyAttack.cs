@@ -9,7 +9,6 @@ public class EnemyAttack : MonoBehaviour
         if (!CanAttack(enemy))
         {
             Debug.Log("Enemy is waiting because they do not have enough AP to attack");
-            enemy.isWaiting = true;
             yield break;
         }
 
@@ -63,7 +62,7 @@ public class EnemyAttack : MonoBehaviour
                 potentialWeapon = weapon;
             }
         }
-        Debug.Log(unit.actionPoints);
+
         if (potentialWeapon == null)
             return false;
         else
